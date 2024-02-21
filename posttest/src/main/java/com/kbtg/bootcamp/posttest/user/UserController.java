@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -18,10 +16,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("")
-    public List<User> getUser(){
-        return this.userService.getUser();
-    }
+//    @GetMapping("")
+//    public List<User> getUser(){
+//        return this.userService.getUser();
+//    }
 
     @Transactional
     @PostMapping("/{userId}/lotteries/{ticketId}")
