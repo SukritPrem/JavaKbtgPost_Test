@@ -1,10 +1,10 @@
-package com.kbtg.bootcamp.posttest.user.user_ticket;
+package com.kbtg.bootcamp.posttest.user.user_ticket_store;
 
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user_ticket")
-public class UserTicket {
+@Table(name = "user_ticket_store")
+public class UserTicketStore {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -18,7 +18,7 @@ public class UserTicket {
 
     private String price;
 
-    public UserTicket()
+    public UserTicketStore()
     {
 
     }
