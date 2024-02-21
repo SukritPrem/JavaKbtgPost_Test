@@ -44,5 +44,3 @@ public class UserController {
     }
 }
 
-//record UserRequestDto(String name, Integer age) {
-//}

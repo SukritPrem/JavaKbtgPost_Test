@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,7 +23,6 @@ public class SecurityConfig{
 
     private final UserRepository userRepository;
 
-    private final AuthenticationUserDetailService authenticationUserDetailService;
     private final JwtAuthFilter jwtAuthFilter;
 
     private final DomainExtractor domainExtractor;
@@ -34,21 +31,13 @@ public class SecurityConfig{
 //    private final CustomBasicAuthenticationFilter customBasicAuthenticationFilter;
 //private final CustomAuthenticationProvider customAuthenticationProvider;
     @Autowired
-    public SecurityConfig(AuthenticationUserDetailService authenticationUserDetailService,
-                          JwtAuthFilter jwtAuthFilter,
-//                            CustomAuthenticationProvider customAuthenticationProvider,
-//                          ApplicationConfig applicationConfig,
-//                          CustomBasicAuthenticationFilter customBasicAuthenticationFilter,
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter,
                           DomainExtractor domainExtractor,
                           AuthenticationManager authenticationManager,
                           JwtService jwtService,
                           UserRepository userRepository) {
-//        this.applicationConfig = applicationConfig;
-        this.authenticationUserDetailService = authenticationUserDetailService;
         this.jwtAuthFilter = jwtAuthFilter;
         this.authenticationManager = authenticationManager;
-//        this.customAuthenticationProvider = customAuthenticationProvider;
-//        this.customBasicAuthenticationFilter =customBasicAuthenticationFilter;
         this.domainExtractor = domainExtractor;
         this.jwtService = jwtService;
         this.userRepository = userRepository;
@@ -69,53 +58,7 @@ public class SecurityConfig{
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)
                 .addFilterAfter(new CustomBasicAuthenticationFilter(userRepository,new CustomAuthenticationManager(userRepository),domainExtractor), JwtAuthFilter.class);
-//                .httpBasic(Customizer.withDefaults()); // Add your custom authentication filter
-//                        .usernameParameter("username") // Customize the username parameter
-//                        .passwordParameter("password") // Customize the password parameter
-//                        .loginProcessingUrl("/login") // Specify the login processing URL
-//                        .successHandler(customAuthenticationSuccessHandler()) // Customize success handler if needed
-//                        .failureHandler(customAuthenticationFailureHandler()); // Customize failure handler if needed)
-
-
-
         return http.build();
     }
-//                .addFilterAfter(
-//                        new CustomBasicAuthenticationFilter(userRepository,jwtService), BasicAuthenticationFilter.class)
-    //                .addFilter(customBasicAuthenticationFilter)
 
-//    @Bean
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.authenticationProvider(customAuthenticationProvider);
-//    }
-
-//
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
-        return authConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(authenticationUserDetailService);
-        authenticationProvider.setPasswordEncoder(CustomAuthenticationManager.passwordEncoder());
-        System.out.print(authenticationProvider + "Hello");
-        return authenticationProvider;
-    }
-//
-
-//    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder authBuilder,
-//                                                   UserDetailsService userDetailsService,
-//                                                   PasswordEncoder passwordEncoder) throws Exception {
-//    authBuilder
-//            .userDetailsService(userDetailsService)
-//            .passwordEncoder(passwordEncoder);
-//    return authBuilder.build();
-//}
-
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
 }

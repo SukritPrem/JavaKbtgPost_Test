@@ -35,8 +35,6 @@ public class CustomAuthenticationManager implements AuthenticationManager {
         Optional<User> user = userRepository.findByuserid(authentication.getName());
         CustomUserDetail customUserDetail = new CustomUserDetail(user.get().getUserId(),user.get().getEncoderpassword());
         List<String> stringList = new ArrayList<>();
-
-        // Add strings to the list
         stringList.add(user.get().getRoles());
         customUserDetail.setRoles(stringList);
         if (!passwordEncoder().matches(authentication.getCredentials().toString(), customUserDetail.getPassword())) {
