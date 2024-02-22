@@ -11,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
@@ -46,39 +46,40 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        authenticateUser(request, response,filterChain);
+
+        try {
+            authenticateUser(request, response,filterChain);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void authenticateUser(HttpServletRequest request, HttpServletResponse response,FilterChain filterChain) throws IOException {
+    private void authenticateUser(HttpServletRequest request, HttpServletResponse response,FilterChain filterChain) throws IOException, InterruptedException, ServletException {
 
         String userid = getUsernameFromRequest(request);
         String password = getPasswordFromRequest(request);
         if (userid != null && password != null) {
+            Optional<User> user = userRepository.findByuserid(userid);
             try {
-                User user = userRepository.findByuserid(userid)
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found with useid: " + userid));
+//                System.out.print("I'm here.\n");
+                if(user.isPresent()) {
+//                    System.out.print("I'm Present.\n");
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(userid, password);
 
-                Authentication authentication = new UsernamePasswordAuthenticationToken(userid, password);
-
-                Authentication authenticated = customAuthenticationManager.authenticate(authentication);
-                response.addHeader("Authorization", "Bearer " + createJwtToken(user));
-                SecurityContextHolder.getContext().setAuthentication(authenticated);
-                filterChain.doFilter(request, response);
+                    Authentication authenticated = customAuthenticationManager.authenticate(authentication);
+                    response.addHeader("Authorization", "Bearer " + createJwtToken(user.get()));
+                    SecurityContextHolder.getContext().setAuthentication(authenticated);
+                }
+//                System.out.print("I'm going.\n");
             }
-            catch (AuthenticationServiceException | ServletException e)
+            catch (AuthenticationServiceException e)
             {
                 handleAuthenticationFailure(request, response, e);
             }
-            catch (UsernameNotFoundException e)
-            {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().write("User not found " + userid);
-            }
         }
-        else {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().write("User not found " + userid);
-        }
+
+        filterChain.doFilter(request, response);
+
     }
 
     public String createJwtToken(User user){

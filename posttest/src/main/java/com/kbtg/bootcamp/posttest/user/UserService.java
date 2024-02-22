@@ -3,6 +3,7 @@ package com.kbtg.bootcamp.posttest.user;
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
+import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicketRepository;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreRepository;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -41,67 +43,89 @@ public class UserService {
     public ResponseEntity<?>  UserBuyTicket(String userId,String ticketId) throws NotFoundException {
         Optional<User> user = userRepository.findByuserid(userId);
         Optional<Lottery> lotteryOptional = lotteryRepository.findByticket(ticketId);
+
         if(user.isEmpty() || lotteryOptional.isEmpty())
             throw new NotFoundException("Error user id or lottery not found");
+
         Lottery lottery = lotteryOptional.get();
         if(lottery.checkAmounteqaulZero())
             ResponseEntity.ok("Sorry Lottery Sold out.");
+
         Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(user.get().getUserId(),lottery.getTicket());
         if(userTicketStoreOptional.isEmpty())
         {
-            //need insert ticket to user_ticket and user_lottery;
-            UserTicketStore userSaveTicket = new UserTicketStore();
-            userSaveTicket.setAmount(lottery.getAmount());
-            userSaveTicket.setTicket(lottery.getTicket());
-            userSaveTicket.setUserid(user.get().getUserId());
-            userSaveTicket.setPrice(lottery.getPrice());
-            userTicketStoreRepository.save(userSaveTicket);
-            //  need update database zero because assume User by all lottery;
+            //insert ticket to user_ticket_store;
+            userTicketStoreRepository.save(new UserTicketStore(
+                    user.get().getUserId(),
+                    lottery.getTicket(),
+                    lottery.getAmount(),
+                    lottery.getPrice()));
+
+            //update database zero because assume User by all lottery;
             lotteryRepository.updateAmountZeroByticket(lottery.getTicket());
 
+            //save user_action
+            UserTicket userTicket = userTicketRepository.save(new UserTicket(
+                    user.get().getUserId(),
+                    "BUY",
+                    lottery.getTicket(),
+                    lottery.getAmount(),
+                    lottery.getPrice()));
+
+            //Set output {"id" : "userTicket::id"}
             Map<String, String> data = new HashMap<>();
-            //need get by id userticket because userticket keep transaction
-            data.put("id", Integer.toString(userSaveTicket.getId()));
+            data.put("id", Integer.toString(userTicket.getId()));
             return new ResponseEntity<>(data, HttpStatus.OK);
         }
         else
         {
             UserTicketStore userLottery = userTicketStoreOptional.get();
-            //  need update database zero because assume User by all lottery;
+
+            //Update database zero because assume User buy all lottery;
             lotteryRepository.updateAmountZeroByticket(lottery.getTicket());
             int totalAmount = Integer.parseInt(userLottery.getAmount()) +
                     Integer.parseInt(lottery.getAmount());
-            //need add amount
+
+            //Update amount
             userTicketStoreRepository.updateAmountById(Integer.toString(totalAmount),
                     userLottery.getUserid());
+
             return ResponseEntity.ok("Update amount in User_lottery");
         }
     }
 
     public ResponseEntity<?> allTotalTicket(String userId)
     {
-//        Optional<UserLottery> userLotteryOptional = userLotteryRepository.findByuserid(userId);
-        List<UserTicketStore> listUserLottery = userTicketStoreRepository.findByuserid(userId);
-        if(listUserLottery.isEmpty())
+        List<UserTicketStore> listTicketStore = userTicketStoreRepository.findByuserid(userId);
+        if(listTicketStore.isEmpty())
             return ResponseEntity.ok("User dosen't have Ticket");
-        List<String> listTicket = new ArrayList<>();
-        int totalPrice = 0;
-        int totalAmount = 0;
-        int AmountForCountPrice = 0;
-        for (UserTicketStore obj : listUserLottery) {
-            listTicket.add(obj.getTicket());
-            AmountForCountPrice = Integer.parseInt(obj.getAmount());
-            for (int j = AmountForCountPrice; j > 0; j--) {
-                totalPrice += Integer.parseInt(obj.getPrice());
-            }
-            totalAmount += AmountForCountPrice;
-        }
 
-        Map<String, Object> jsonObject = new HashMap<>();
-        jsonObject.put("tickets", listTicket);
-        jsonObject.put("count", totalAmount);
-        jsonObject.put("cost", totalPrice);
+        List<String> listTicket = listTicketStore.stream()
+                .map(UserTicketStore::getTicket)
+                .collect(Collectors.toList());
 
+        int totalPrice =  listTicketStore .stream()
+                .mapToInt(userLottery -> Integer.parseInt(userLottery.getPrice()))
+                .sum();;
+        int totalAmount = listTicketStore .stream()
+                .mapToInt(userTicketStore -> Integer.parseInt(userTicketStore.getAmount()))
+                .sum();
+
+//        int AmountForCountPrice = 0;
+//        for (UserTicketStore obj : listUserLottery) {
+//            listTicket.add(obj.getTicket());
+//            AmountForCountPrice = Integer.parseInt(obj.getAmount());
+//            for (int j = AmountForCountPrice; j > 0; j--) {
+//                totalPrice += Integer.parseInt(obj.getPrice());
+//            }
+//            totalAmount += AmountForCountPrice;
+//        }
+
+        Map<String, Object> jsonObject = Map.of(
+                "tickets", listTicket,
+                "count", totalAmount,
+                "cost", totalPrice
+        );
         return new ResponseEntity<>(jsonObject,HttpStatus.OK);
     }
 

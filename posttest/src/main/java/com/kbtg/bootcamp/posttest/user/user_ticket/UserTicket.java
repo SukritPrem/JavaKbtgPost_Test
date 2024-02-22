@@ -1,5 +1,6 @@
 package com.kbtg.bootcamp.posttest.user.user_ticket;
 
+
 import jakarta.persistence.*;
 
 @Entity
@@ -11,6 +12,7 @@ public class UserTicket {
     @Column(name = "userid", unique = true, nullable = false, length = 255)
     private String userid;
 
+    private String user_action;
     private String ticket;
 
     private String amount;
@@ -21,6 +23,14 @@ public class UserTicket {
     public UserTicket()
     {
 
+    }
+    public UserTicket(String userid,String user_action,String ticket, String amount, String price)
+    {
+        this.userid =userid;
+        this.user_action = user_action;
+        this.ticket = ticket;
+        this.amount = amount;
+        this.price =price;
     }
     public Integer getId() {
         return id;
@@ -68,4 +78,11 @@ public class UserTicket {
     }
 
 
+    public String getUser_action() {
+        return user_action;
+    }
+
+    public void setUser_action(String user_action) {
+        this.user_action = user_action;
+    }
 }

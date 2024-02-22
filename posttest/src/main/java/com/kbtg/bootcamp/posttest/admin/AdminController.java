@@ -25,6 +25,6 @@ public class AdminController {
     @Transactional
     @PostMapping("/lotteries")
     public ResponseEntity<?> createLottery(@Valid @RequestBody LotteryRequest lotteryRequest) throws NotFoundException {
-        return lotteryService.createNewLottery(lotteryRequest);
+        return lotteryService.createNewLotteryByAdmin(lotteryRequest);
     }
 }

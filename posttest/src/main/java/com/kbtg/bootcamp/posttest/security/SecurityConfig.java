@@ -46,19 +46,20 @@ public class SecurityConfig{
     private AuthenticationConfiguration authenticationConfiguration;
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
+        return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) ->
                         requests
                                 .requestMatchers("/admin").hasAnyRole("ADMIN")
                                 .requestMatchers("/lotteries").permitAll()
-                                .requestMatchers("/users").permitAll()
+                                .requestMatchers("/users/**").permitAll()
                                 .anyRequest()
                                 .authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)
-                .addFilterAfter(new CustomBasicAuthenticationFilter(userRepository,new CustomAuthenticationManager(userRepository),domainExtractor), JwtAuthFilter.class);
-        return http.build();
+                .addFilterAfter(new CustomBasicAuthenticationFilter(userRepository,new CustomAuthenticationManager(userRepository),domainExtractor), JwtAuthFilter.class)
+                .build();
+
     }
 
 }

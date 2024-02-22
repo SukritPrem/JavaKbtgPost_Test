@@ -32,6 +32,7 @@ public class UserController {
     @GetMapping("/{userId}/lotteries")
     public ResponseEntity<?> UserGetAllTicket(@PathVariable  @Pattern(regexp = "\\d{10}") String userId)
     {
+        System.out.print(userId + "I'm in path");
         return userService.allTotalTicket(userId);
     }
 

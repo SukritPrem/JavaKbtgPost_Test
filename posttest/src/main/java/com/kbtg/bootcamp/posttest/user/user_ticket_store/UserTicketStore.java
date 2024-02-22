@@ -22,6 +22,14 @@ public class UserTicketStore {
     {
 
     }
+
+    public UserTicketStore(String userid,String ticket,String amount,String price )
+    {
+        this.userid =userid;
+        this.ticket =ticket;
+        this.amount =amount;
+        this.price = price;
+    }
     public Integer getId() {
         return id;
     }
