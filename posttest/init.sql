@@ -23,7 +23,7 @@ CREATE TABLE user_ticket (
     userId VARCHAR(255) REFERENCES user_profile(userId) ON DELETE CASCADE,
     roles VARCHAR(255) NOT NULL,
     user_action VARCHAR(255) NOT NULL,
-    ticket VARCHAR(255) NOT NULL REFERENCES lottery(ticket) ON DELETE CASCADE,
+    ticket VARCHAR(255) NOT NULL REFERENCES lottery(ticket),
     amount VARCHAR(255) NOT NULL,
     price VARCHAR(255) NOT NULL,
     action_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -32,10 +32,11 @@ CREATE TABLE user_ticket (
 CREATE TABLE user_ticket_store(
     id SERIAL PRIMARY KEY,
     userId VARCHAR(255) REFERENCES user_profile(userId) ON DELETE CASCADE,
-    ticket VARCHAR(255) NOT NULL REFERENCES lottery(ticket) ON DELETE CASCADE,
+    ticket VARCHAR(255) NOT NULL REFERENCES lottery(ticket),
     amount VARCHAR(255) NOT NULL,
     price VARCHAR(255) NOT NULL
 );
+
 -- Initial data
 INSERT INTO lottery(price,amount,ticket) VALUES('199', '10', '000001');
 INSERT INTO lottery(price,amount,ticket) VALUES('199', '10', '111111');

@@ -77,9 +77,9 @@ public class UserService {
 
             //Update database zero because assume User buy all lottery;
             lotteryRepository.updateAmountZeroByticket(lottery.getTicket());
-            int totalAmount = Integer.parseInt(userLottery.getAmount()) +
+            Integer totalAmount = Integer.parseInt(userLottery.getAmount()) +
                     Integer.parseInt(lottery.getAmount());
-
+            System.out.print("\ntotal amount user :" + totalAmount + "\n");
             //Update amount
             userTicketStoreRepository.updateAmountByuserIdAndTicket(Integer.toString(totalAmount),
                     userLottery.getUserid(),
@@ -91,7 +91,7 @@ public class UserService {
                     user.get(),
                     lottery);
             //save user_action
-            return saveUserActionReturnId("UPDATE", totalAmount, user.get(), lottery);
+            return saveUserActionReturnId("UPDATE", Integer.parseInt(lottery.getAmount()), user.get(), lottery);
         }
     }
 
@@ -143,7 +143,7 @@ public class UserService {
                 Integer.toString(totalAmount), // Assuming totalAmount is an int
                 lottery.getPrice()));
     }
-    private UserTicket saveUserActionReturnUserTicket(String actionType, int totalAmount, User user,Lottery lottery) {
+    public UserTicket saveUserActionReturnUserTicket(String actionType, int totalAmount, User user,Lottery lottery) {
         return (userTicketRepository.save(new UserTicket(
                 user.getUserId(),
                 user.getRoles(),

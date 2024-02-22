@@ -3,10 +3,9 @@ package com.kbtg.bootcamp.posttest.lottery;
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.UserRepository;
+import com.kbtg.bootcamp.posttest.user.UserService;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicketRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,61 +19,74 @@ public class LotteryService {
 
     private UserRepository userRepository;
 
+    private UserService userService;
     private UserTicketRepository userTicketRepository;
 
     public LotteryService(LotteryRepository lotteryRepository,
                           UserTicketRepository userTicketRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          UserService userService) {
         this.lotteryRepository = lotteryRepository;
         this.userTicketRepository = userTicketRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public List<String> getAll_lottery() {
         List<Lottery> lotteryList = lotteryRepository.findAll();
         return lotteryList.stream()
+                .filter(lottery -> {
+                    int amount = Integer.parseInt(lottery.getAmount());
+                    return amount > 0;
+                })
                 .map(Lottery::getTicket)
                 .collect(Collectors.toList());
     }
 
-    public ResponseEntity<?> createNewLotteryByAdmin(LotteryRequest lotteryRequest) throws NotFoundException {
+    public UserTicket createNewLotteryByAdmin(LotteryRequest lotteryRequest) throws NotFoundException {
+        System.out.print(lotteryRequest.getAmount() + "check value\n");
         Optional<Lottery> lotteryOptional = lotteryRepository.findByTicket(lotteryRequest.getTicket());
-
+        Lottery newLottery = new Lottery();
+        newLottery.setTicket(lotteryRequest.getTicket());
+        newLottery.setPrice(Integer.toString(lotteryRequest.getPrice()));
+        newLottery.setAmount(Integer.toString(lotteryRequest.getAmount()));
         //assume admin have 1 person
         Optional<User> user = userRepository.findByroles("ADMIN");
 
         if(lotteryOptional.isEmpty())
         {
             //Create new Lottery
-            Lottery newLottery = new Lottery();
-            newLottery.setTicket(lotteryRequest.getTicket());
-            newLottery.setPrice(Integer.toString(lotteryRequest.getPrice()));
-            newLottery.setAmount(Integer.toString(lotteryRequest.getAmount()));
+//            Lottery newLottery = new Lottery();
+//            newLottery.setTicket(lotteryRequest.getTicket());
+//            newLottery.setPrice(Integer.toString(lotteryRequest.getPrice()));
+//            newLottery.setAmount(Integer.toString(lotteryRequest.getAmount()));
             lotteryRepository.save(newLottery);
 
             //save user_action
-            UserTicket userTicket = userTicketRepository.save(new UserTicket(
-                    user.get().getUserId(),
-                    user.get().getRoles(),
+            return userService.saveUserActionReturnUserTicket(
                     "ADD",
-                    newLottery.getTicket(),
-                    newLottery.getAmount(),
-                    newLottery.getPrice()));
-            return new ResponseEntity<>(newLottery, HttpStatus.OK);
+                    Integer.parseInt(newLottery.getAmount()),
+                    user.get(),
+                    newLottery
+            );
         }
         else
         {
             Lottery lottery = lotteryOptional.get();
 
-            int total = Integer.parseInt(lottery.getAmount()) + lotteryRequest.getAmount();
+            //update lottery
+            //update to table lottery
+            String totalAmountString = Integer.toString(Integer.parseInt(lottery.getAmount()) + Integer.parseInt(newLottery.getAmount()));
+            lotteryRepository.updateAmountByticket(totalAmountString,lottery.getTicket());
+            lotteryRepository.updatePriceByticket(lottery.getPrice(),lottery.getTicket());
 
-            //Update amount;
-            lotteryRepository.updateAmountByticket(Integer.toString(total),lotteryRequest.getTicket());
-
-            //Update price;
-            lotteryRepository.updatePriceByticket(Integer.toString(lotteryRequest.getPrice()),lotteryRequest.getTicket());
-
-            return ResponseEntity.ok("Update Amount and Price");
+            //Save user_ticket
+            return userService.saveUserActionReturnUserTicket(
+                    "ADD",
+                    Integer.parseInt(totalAmountString),
+                    user.get(),
+                    lottery
+            );
         }
     }
 

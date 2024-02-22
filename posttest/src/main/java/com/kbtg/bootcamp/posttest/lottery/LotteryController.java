@@ -1,10 +1,9 @@
 package com.kbtg.bootcamp.posttest.lottery;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -26,16 +25,12 @@ public class LotteryController {
         this.lotteryRepository = lotteryRepository;
     }
 
-//    @Transactional
-//    @PostMapping("/lotteries")
-//    public ResponseEntity<?> createLottery(@Valid @RequestBody LotteryRequest lotteryRequest) throws NotFoundException {
-//        return lotteryService.createNewLottery(lotteryRequest);
-//    }
 
     @GetMapping("")
-    public ResponseEntity<Object> getData() {
+    @ResponseBody
+    public Map<String, List<String>> getData() {
         Map<String, List<String>> data = new HashMap<>();
         data.put("ticket", lotteryService.getAll_lottery());
-        return new ResponseEntity<>(data, HttpStatus.OK);
+        return data;
     }
 }

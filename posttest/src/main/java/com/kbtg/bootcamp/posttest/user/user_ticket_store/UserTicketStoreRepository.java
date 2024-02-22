@@ -28,7 +28,7 @@ public interface UserTicketStoreRepository extends JpaRepository<UserTicketStore
 
     @Modifying
     @Transactional
-    @Query(value ="UPDATE user_ticket SET amount =:amount WHERE userid =:userid AND ticket=:ticket", nativeQuery = true)
+    @Query(value ="UPDATE user_ticket_store SET amount =:amount WHERE userid =:userid AND ticket=:ticket", nativeQuery = true)
     void updateAmountByuserIdAndTicket(@Param("amount") String amount, @Param("userid") String userid,
                                        @Param("ticket") String ticket);
 
