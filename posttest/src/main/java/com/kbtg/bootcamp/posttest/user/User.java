@@ -22,9 +22,7 @@ public class User {
     }
 
     // Getters and setters
-    public Integer getId() {
-        return id;
-    }
+
 
     public void setId(Integer id) {
         this.id = id;
@@ -55,5 +53,9 @@ public class User {
 
     public void setEncoderpassword(String encoderpassword) {
         this.encoderpassword = encoderpassword;
+    }
+
+    public Integer getId() {
+        return id;
     }
 }

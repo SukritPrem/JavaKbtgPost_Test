@@ -1,29 +1,53 @@
 package com.kbtg.bootcamp.posttest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kbtg.bootcamp.posttest.user.UserController;
+import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
-@WebMvcTest(UserController.class)
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+@ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @MockBean
+    MockMvc mvc;
+
+
+    @Mock
     private UserRepository userRepository;
 
-//    @Test
 
-//    @DisplayName("Test path /{userId}/lotteries/{ticketId} when /00/lotteries/00")
-//    public void testAddShouldReturn400BadRequest() throws Exception {
+    @Test
+    void savedUserHasRegistrationDate() {
+        User user = new User();
+        user.setRoles("USER");
+        user.setEncoderpassword("09876543");
+        user.setUserId("134567543");
+
+        userRepository.save(user);
+        // Retrieve the saved user
+        Optional<User> savedUserOptional = userRepository.findById(user.getId().longValue());
+
+        // Assert that the saved user exists
+        assertTrue(savedUserOptional.isPresent(), "User should be saved");
+
+        // Get the saved user
+        User savedUser = savedUserOptional.get();
+
+        // Assert that the saved user has a registration date
+
+    }
+
+
+//    @Test
+//    @DisplayName("Test path /user/{userId}/lotteries/{ticketId} when user/00/lotteries/00")
+//    public void testAddShouldReturn200Request() throws Exception {
 //
 //
 //
