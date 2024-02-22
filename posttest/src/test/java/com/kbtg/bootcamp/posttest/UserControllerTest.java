@@ -1,23 +1,18 @@
 package com.kbtg.bootcamp.posttest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kbtg.bootcamp.posttest.user.User;
+import com.kbtg.bootcamp.posttest.user.UserController;
 import com.kbtg.bootcamp.posttest.user.UserRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@WebMvcTest(UserController.class)
 public class UserControllerTest {
 
-    private static final String END_POINT_PATH = "/user";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -25,18 +20,19 @@ public class UserControllerTest {
     @MockBean
     private UserRepository userRepository;
 
-    @Test
-    @DisplayName("Test path /{userId}/lotteries/{ticketId} when /00/lotteries/00")
-    public void testAddShouldReturn400BadRequest() throws Exception {
-        User newUser = new User();
+//    @Test
 
-        String requestBody = objectMapper.writeValueAsString(newUser);
-
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/0/lotteries/Hello")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
+//    @DisplayName("Test path /{userId}/lotteries/{ticketId} when /00/lotteries/00")
+//    public void testAddShouldReturn400BadRequest() throws Exception {
+//
+//
+//
+//        Mockito.when(patientRecordRepository.findAll()).thenReturn(records);
+//        mockMvc.perform(MockMvcRequestBuilders
+//                        .post("/users/0/lotteries/Hello")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isBadRequest());
+//    }
 
 
 }

@@ -26,10 +26,11 @@ public interface UserTicketRepository extends JpaRepository<UserTicket, Long> {
 
 //UPDATE user_lottery SET amount = '2' WHERE userid = 'Person1';
 
-    @Modifying
-    @Transactional
-    @Query(value ="UPDATE user_ticket SET amount =:amount WHERE userid =:userid", nativeQuery = true)
-    void updateAmountById(@Param("amount") String amount, @Param("userid") String userid);
+//    @Modifying
+//    @Transactional
+//    @Query(value ="UPDATE user_ticket SET amount =:amount WHERE userid =:userid AND ticket=:ticket", nativeQuery = true)
+//    void updateAmountByuserIdAndTicket(@Param("amount") String amount, @Param("userid") String userid,
+//                                       @Param("ticket") String ticket);
 
     List<UserTicket> findByuserid(String userid);
 

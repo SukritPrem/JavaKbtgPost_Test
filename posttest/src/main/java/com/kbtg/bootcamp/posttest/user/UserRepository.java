@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 //    @Transactional
 //    @Query(value = "SELECT * FROM user_proflie WHERE userid=:userid", nativeQuery = true)
 //    User finduserByuserId(@Param("userid") String userid);
-
+    Optional<User> findByroles(String role);
     Optional<User> findByuserid(String userid);
 
 }

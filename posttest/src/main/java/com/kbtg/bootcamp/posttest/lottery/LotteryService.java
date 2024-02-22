@@ -1,6 +1,8 @@
 package com.kbtg.bootcamp.posttest.lottery;
 
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
+import com.kbtg.bootcamp.posttest.user.User;
+import com.kbtg.bootcamp.posttest.user.UserRepository;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicketRepository;
 import org.springframework.http.HttpStatus;
@@ -16,12 +18,16 @@ public class LotteryService {
 
     private LotteryRepository lotteryRepository;
 
+    private UserRepository userRepository;
+
     private UserTicketRepository userTicketRepository;
 
     public LotteryService(LotteryRepository lotteryRepository,
-                          UserTicketRepository userTicketRepository) {
+                          UserTicketRepository userTicketRepository,
+                          UserRepository userRepository) {
         this.lotteryRepository = lotteryRepository;
         this.userTicketRepository = userTicketRepository;
+        this.userRepository = userRepository;
     }
 
     public List<String> getAll_lottery() {
@@ -34,6 +40,9 @@ public class LotteryService {
     public ResponseEntity<?> createNewLotteryByAdmin(LotteryRequest lotteryRequest) throws NotFoundException {
         Optional<Lottery> lotteryOptional = lotteryRepository.findByTicket(lotteryRequest.getTicket());
 
+        //assume admin have 1 person
+        Optional<User> user = userRepository.findByroles("ADMIN");
+
         if(lotteryOptional.isEmpty())
         {
             //Create new Lottery
@@ -45,7 +54,8 @@ public class LotteryService {
 
             //save user_action
             UserTicket userTicket = userTicketRepository.save(new UserTicket(
-                    "ADMIN",
+                    user.get().getUserId(),
+                    user.get().getRoles(),
                     "ADD",
                     newLottery.getTicket(),
                     newLottery.getAmount(),

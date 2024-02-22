@@ -38,6 +38,7 @@ CREATE TABLE user_ticket_store(
 );
 -- Initial data
 INSERT INTO lottery(price,amount,ticket) VALUES('199', '10', '000001');
+INSERT INTO lottery(price,amount,ticket) VALUES('199', '10', '111111');
 --password=password1
 INSERT INTO user_profile(userId, roles, encoderPassword) VALUES('0123456789','USER','$2a$10$vfDwXoqEU2jQp84JITQO7OjYVarypOxwt74H60Zo4RX2NCbE/hWHa');
 --password=password2

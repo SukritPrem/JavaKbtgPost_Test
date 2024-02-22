@@ -12,6 +12,8 @@ public class UserTicket {
     @Column(name = "userid", unique = true, nullable = false, length = 255)
     private String userid;
 
+
+    private String roles;
     private String user_action;
     private String ticket;
 
@@ -24,9 +26,10 @@ public class UserTicket {
     {
 
     }
-    public UserTicket(String userid,String user_action,String ticket, String amount, String price)
+    public UserTicket(String userid,String role,String user_action,String ticket, String amount, String price)
     {
         this.userid =userid;
+        this.roles =role;
         this.user_action = user_action;
         this.ticket = ticket;
         this.amount = amount;
@@ -84,5 +87,13 @@ public class UserTicket {
 
     public void setUser_action(String user_action) {
         this.user_action = user_action;
+    }
+
+    public String getRole() {
+        return roles;
+    }
+
+    public void setRole(String role) {
+        this.roles = role;
     }
 }

@@ -56,9 +56,7 @@ public class Lottery {
 
     public boolean checkAmounteqaulZero()
     {
-        if(Integer.parseInt(amount) == 0)
-            return (true);
-        return (false);
+        return Integer.parseInt(amount) == 0;
     }
 
 }
