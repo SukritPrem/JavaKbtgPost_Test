@@ -7,6 +7,7 @@ import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicketRepository;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreRepository;
+import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -15,22 +16,25 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    private final UserRepository userRepository;
+    private  final UserRepository userRepository;
 
     private final LotteryRepository lotteryRepository;
 
     private final UserTicketRepository userTicketRepository;
 
-    private final UserTicketStoreRepository userTicketStoreRepository;
+    private final UserTicketStoreService userTicketStoreService;
+    private UserTicketStoreRepository userTicketStoreRepository;
 
     public UserService(UserRepository userRepository,
                        LotteryRepository lotteryRepository,
                        UserTicketRepository userTicketRepository,
-                       UserTicketStoreRepository userTicketStoreRepository) {
+                       UserTicketStoreRepository userTicketStoreRepository,
+                       UserTicketStoreService userTicketStoreService) {
         this.userRepository = userRepository;
         this.lotteryRepository = lotteryRepository;
         this.userTicketRepository = userTicketRepository;
         this.userTicketStoreRepository =userTicketStoreRepository;
+        this.userTicketStoreService =userTicketStoreService;
 
     }
 
@@ -51,48 +55,48 @@ public class UserService {
         if(lottery.checkAmounteqaulZero()) {
             throw new NotFoundException("Sorry Lottery Sold out.");
         }
-
-        Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(user.get().getUserId(),lottery.getTicket());
-        if(userTicketStoreOptional.isEmpty())
-        {
-            //insert ticket to user_ticket_store;
-            userTicketStoreRepository.save(new UserTicketStore(
-                    user.get().getUserId(),
-                    lottery.getTicket(),
-                    lottery.getAmount(),
-                    lottery.getPrice()));
-
-            //update database zero because assume User by all lottery;
-            lotteryRepository.updateAmountZeroByticket(lottery.getTicket());
-
-            //save user_action
-            return saveUserActionReturnId("BUY",
-                    Integer.parseInt(lottery.getAmount()),
-                    user.get(),
-                    lottery);
-        }
-        else
-        {
-            UserTicketStore userLottery = userTicketStoreOptional.get();
-
-            //Update database zero because assume User buy all lottery;
-            lotteryRepository.updateAmountZeroByticket(lottery.getTicket());
-            Integer totalAmount = Integer.parseInt(userLottery.getAmount()) +
-                    Integer.parseInt(lottery.getAmount());
-            System.out.print("\ntotal amount user :" + totalAmount + "\n");
-            //Update amount
-            userTicketStoreRepository.updateAmountByuserIdAndTicket(Integer.toString(totalAmount),
-                    userLottery.getUserid(),
-                    lottery.getTicket());
-
-            //save user_action
-            saveUserAction("BUY",
-                    Integer.parseInt(lottery.getAmount()),
-                    user.get(),
-                    lottery);
-            //save user_action
-            return saveUserActionReturnId("UPDATE", Integer.parseInt(lottery.getAmount()), user.get(), lottery);
-        }
+        return userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(lotteryOptional.get(),user.get());
+//        Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(user.get().getUserId(),lottery.getTicket());
+//        if(userTicketStoreOptional.isEmpty())
+//        {
+//            //insert ticket to user_ticket_store;
+//            userTicketStoreRepository.save(new UserTicketStore(
+//                    user.get().getUserId(),
+//                    lottery.getTicket(),
+//                    lottery.getAmount(),
+//                    lottery.getPrice()));
+//
+//            //update database zero because assume User by all lottery;
+//            lotteryRepository.updateAmountZeroByticket(lottery.getTicket());
+//
+//            //save user_action
+//            return saveUserActionReturnId("BUY",
+//                    Integer.parseInt(lottery.getAmount()),
+//                    user.get(),
+//                    lottery);
+//        }
+//        else
+//        {
+//            UserTicketStore userLottery = userTicketStoreOptional.get();
+//
+//            //Update database zero because assume User buy all lottery;
+//            lotteryRepository.updateAmountZeroByticket(lottery.getTicket());
+//            Integer totalAmount = Integer.parseInt(userLottery.getAmount()) +
+//                    Integer.parseInt(lottery.getAmount());
+//            System.out.print("\ntotal amount user :" + totalAmount + "\n");
+//            //Update amount
+//            userTicketStoreRepository.updateAmountByuserIdAndTicket(Integer.toString(totalAmount),
+//                    userLottery.getUserid(),
+//                    lottery.getTicket());
+//
+//            //save user_action
+//            saveUserAction("BUY",
+//                    Integer.parseInt(lottery.getAmount()),
+//                    user.get(),
+//                    lottery);
+//            //save user_action
+//            return saveUserActionReturnId("UPDATE", Integer.parseInt(lottery.getAmount()), user.get(), lottery);
+//        }
     }
 
     public  ReturnResultAllToUser  allTotalTicket(String userId) throws NotFoundException {
@@ -133,7 +137,7 @@ public class UserService {
     }
 
     // Define a method to save user action
-    private void saveUserAction(String actionType, int totalAmount, User user,Lottery lottery) {
+    public void saveUserAction(String actionType, int totalAmount, User user, Lottery lottery) {
         userTicketRepository.save(new UserTicket(
                 user.getUserId(),
                 user.getRoles(),
@@ -152,7 +156,7 @@ public class UserService {
                 lottery.getPrice())));
     }
 
-    private int saveUserActionReturnId(String actionType, int totalAmount, User user,Lottery lottery) {
+    public int saveUserActionReturnId(String actionType, int totalAmount, User user, Lottery lottery) {
         UserTicket userTicket = userTicketRepository.save(new UserTicket(
                 user.getUserId(),
                 user.getRoles(),
