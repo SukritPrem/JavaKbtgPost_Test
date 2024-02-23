@@ -95,25 +95,24 @@ public class UserService {
         }
     }
 
-    public ReturnAllResultUserTicket allTotalTicket(String userId) throws NotFoundException {
+    public  ReturnResultAllToUser  allTotalTicket(String userId) throws NotFoundException {
         List<UserTicketStore> listTicketStore = userTicketStoreRepository.findByuserid(userId);
         if(listTicketStore.isEmpty())
             throw new NotFoundException("User dosen't have Ticket");
-        return new ReturnAllResultUserTicket(
-                listTicketStore
-                        .stream()
-                        .map(UserTicketStore::getTicket)
-                        .toList(),
-                listTicketStore
-                        .stream()
-                        .mapToInt(userLottery -> Integer.parseInt(userLottery.getAmount()) *
-                                Integer.parseInt(userLottery.getPrice()))
-                        .sum(),
-                listTicketStore
-                        .stream()
-                        .mapToInt(userTicketStore -> Integer.parseInt(userTicketStore.getAmount()))
-                        .sum()
-        );
+        List<String> resultAllTicket = listTicketStore
+                .stream()
+                .map(UserTicketStore::getTicket)
+                .toList();
+        Integer reultAllPrice = listTicketStore
+                .stream()
+                .mapToInt(userLottery -> Integer.parseInt(userLottery.getAmount()) *
+                        Integer.parseInt(userLottery.getPrice()))
+                .sum();
+        Integer resultAllAmount =   listTicketStore
+                .stream()
+                .mapToInt(userTicketStore -> Integer.parseInt(userTicketStore.getAmount()))
+                .sum();
+        return new ReturnResultAllToUser(resultAllTicket,reultAllPrice,resultAllAmount);
     }
 
     public UserTicket deleteTicket(String userId,String ticket) throws NotFoundException {
@@ -165,4 +164,19 @@ public class UserService {
     }
 }
 
-record ReturnAllResultUserTicket(List<String> ticket, Integer price, Integer amount) {}
+// record ReturnAllResultUserTicket(List<String> ticket, Integer price , Integer amount)
+//        return new ReturnAllResultUserTicket(
+//                listTicketStore
+//                        .stream()
+//                        .map(UserTicketStore::getTicket)
+//                        .toList(),
+//                listTicketStore
+//                        .stream()
+//                        .mapToInt(userLottery -> Integer.parseInt(userLottery.getAmount()) *
+//                                Integer.parseInt(userLottery.getPrice()))
+//                        .sum(),
+//                listTicketStore
+//                        .stream()
+//                        .mapToInt(userTicketStore -> Integer.parseInt(userTicketStore.getAmount()))
+//                        .sum()
+//        );

@@ -24,11 +24,9 @@ public class LotteryService {
 
     public LotteryService(LotteryRepository lotteryRepository,
                           UserTicketRepository userTicketRepository,
-                          UserRepository userRepository,
                           UserService userService) {
         this.lotteryRepository = lotteryRepository;
         this.userTicketRepository = userTicketRepository;
-        this.userRepository = userRepository;
         this.userService = userService;
     }
 
@@ -44,7 +42,6 @@ public class LotteryService {
     }
 
     public UserTicket createNewLotteryByAdmin(LotteryRequest lotteryRequest) throws NotFoundException {
-        System.out.print(lotteryRequest.getAmount() + "check value\n");
         Optional<Lottery> lotteryOptional = lotteryRepository.findByTicket(lotteryRequest.getTicket());
         Lottery newLottery = new Lottery();
         newLottery.setTicket(lotteryRequest.getTicket());
@@ -55,20 +52,10 @@ public class LotteryService {
 
         if(lotteryOptional.isEmpty())
         {
-            //Create new Lottery
-//            Lottery newLottery = new Lottery();
-//            newLottery.setTicket(lotteryRequest.getTicket());
-//            newLottery.setPrice(Integer.toString(lotteryRequest.getPrice()));
-//            newLottery.setAmount(Integer.toString(lotteryRequest.getAmount()));
-            lotteryRepository.save(newLottery);
-
-            //save user_action
-            return userService.saveUserActionReturnUserTicket(
-                    "ADD",
-                    Integer.parseInt(newLottery.getAmount()),
-                    user.get(),
-                    newLottery
-            );
+            return CreateNewLotteryAndReturnUserticket(lotteryRepository,
+                    userService,
+                    newLottery,
+                    user.get());
         }
         else
         {
@@ -89,5 +76,21 @@ public class LotteryService {
             );
         }
     }
+
+    public UserTicket CreateNewLotteryAndReturnUserticket(LotteryRepository lotteryRepository,
+                                                          UserService userService,
+                                                          Lottery newLottery,
+                                                          User user)
+    {
+        lotteryRepository.save(newLottery);
+        //save user_action
+        return userService.saveUserActionReturnUserTicket(
+                "ADD",
+                Integer.parseInt(newLottery.getAmount()),
+                user,
+                newLottery
+        );
+    }
+
 
 }

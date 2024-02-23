@@ -5,8 +5,6 @@ import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -32,11 +30,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/lotteries")
-    public ResponseEntity<?> UserGetAllTicket(@PathVariable  @Pattern(regexp = "\\d{10}") String userId) throws NotFoundException {
-        return new ResponseEntity<>(
-                userService.allTotalTicket(userId),
-                HttpStatus.OK
-        );
+    public ReturnResultAllToUser UserGetAllTicket(@PathVariable  @Pattern(regexp = "\\d{10}") String userId) throws NotFoundException {
+        return userService.allTotalTicket(userId);
     }
 
     @ResponseBody
@@ -47,6 +42,14 @@ public class UserController {
         return Map.of(
                 "ticket", userTicket.getTicket()
         );
+    }
+
+    @GetMapping("/me")
+    Message me() {
+        return new Message("Hello, Wallet!");
+    }
+
+    record Message(String message) {
     }
 }
 
