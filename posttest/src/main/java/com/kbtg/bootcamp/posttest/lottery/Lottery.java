@@ -22,6 +22,16 @@ public class Lottery {
     @Column(name = "ticket")
     private String ticket;
 
+    public Lottery()
+    {
+
+    }
+    public Lottery(String price,  String ticket, String amount)
+    {
+        this.price =price;
+        this.amount = amount;
+        this.ticket =ticket;
+    }
     public Integer getId() {
         return id;
     }

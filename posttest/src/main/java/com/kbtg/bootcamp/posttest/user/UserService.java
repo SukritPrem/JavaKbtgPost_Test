@@ -6,6 +6,7 @@ import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
 import com.kbtg.bootcamp.posttest.user.userOperationService.UserOperationsService;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicketRepository;
+import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
@@ -84,42 +85,26 @@ public class UserService {
             throw new NotFoundException("Error User Buy Ticket");
     }
 
-//    public  ReturnResultAllToUser  allTotalTicket(String userId) throws NotFoundException {
-//        List<UserTicketStore> listTicketStore = userTicketStoreRepository.findByuserid(userId);
-//        if(listTicketStore.isEmpty())
-//            throw new NotFoundException("User dosen't have Ticket");
-//        List<String> resultAllTicket = listTicketStore
-//                .stream()
-//                .map(UserTicketStore::getTicket)
-//                .toList();
-//        Integer reultAllPrice = listTicketStore
-//                .stream()
-//                .mapToInt(userLottery -> Integer.parseInt(userLottery.getAmount()) *
-//                        Integer.parseInt(userLottery.getPrice()))
-//                .sum();
-//        Integer resultAllAmount =   listTicketStore
-//                .stream()
-//                .mapToInt(userTicketStore -> Integer.parseInt(userTicketStore.getAmount()))
-//                .sum();
-//        return new ReturnResultAllToUser(resultAllTicket,reultAllPrice,resultAllAmount);
-//    }
+    public  ReturnResultAllToUser  allTotalTicket(String userId) throws NotFoundException {
+        return userTicketStoreService.SumTicketAndCostAndAmount(userId);
+    }
 //
-//    public UserTicket deleteTicket(String userId,String ticket) throws NotFoundException {
-//        Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(userId, ticket);
-//        Optional<User> user = userRepository.findByuserid(userId);
-//        if(userTicketStoreOptional.isEmpty() || user.isEmpty())
-//            throw new NotFoundException("Ticket not found or User not found");
-//        userTicketStoreRepository.deleteTicketByuserId(ticket,userId);
-//        Lottery lottery = new Lottery();
-//        lottery.setTicket(userTicketStoreOptional.get().getTicket());
-//        lottery.setPrice(userTicketStoreOptional.get().getPrice());
-//        return saveUserActionReturnUserTicket(
-//                "DELETE",
-//                Integer.parseInt(userTicketStoreOptional.get().getAmount()),
-//                user.get(),
-//                lottery
-//        );
-//    }
+    public UserTicket deleteTicket(String userId,String ticket) throws NotFoundException {
+
+        Optional<User> user = userRepository.findByuserid(userId);
+        if(user.isEmpty())
+            throw new NotFoundException("Ticket not found or User not found");
+        UserTicketStore userTicketStore = userTicketStoreService.deleteTicketInUserTicketStore(userId,ticket);
+
+        return  userTicketRepository.save(new UserTicket(
+                userTicketStore.getUserid(),
+                "USER",
+                "DELETE",
+                userTicketStore.getTicket(),
+                userTicketStore.getAmount(), // Assuming totalAmount is an int
+                userTicketStore.getPrice())
+        );
+    }
 
     // Define a method to save user action
     public void saveUserAction(String actionType, String totalAmount, User user, Lottery lottery) {
@@ -131,6 +116,7 @@ public class UserService {
                 totalAmount, // Assuming totalAmount is an int
                 lottery.getPrice()));
     }
+
     public UserTicket saveUserActionReturnUserTicket(String actionType, int totalAmount, User user,Lottery lottery) {
         return (userTicketRepository.save(new UserTicket(
                 user.getUserId(),
@@ -169,3 +155,21 @@ public class UserService {
 //                        .mapToInt(userTicketStore -> Integer.parseInt(userTicketStore.getAmount()))
 //                        .sum()
 //        );
+
+//        List<UserTicketStore> listTicketStore = userTicketStoreRepository.findByuserid(userId);
+//        if(listTicketStore.isEmpty())
+//            throw new NotFoundException("User dosen't have Ticket");
+//        List<String> resultAllTicket = listTicketStore
+//                .stream()
+//                .map(UserTicketStore::getTicket)
+//                .toList();
+//        Integer reultAllPrice = listTicketStore
+//                .stream()
+//                .mapToInt(userLottery -> Integer.parseInt(userLottery.getAmount()) *
+//                        Integer.parseInt(userLottery.getPrice()))
+//                .sum();
+//        Integer resultAllAmount =   listTicketStore
+//                .stream()
+//                .mapToInt(userTicketStore -> Integer.parseInt(userTicketStore.getAmount()))
+//                .sum();
+//        return new ReturnResultAllToUser(resultAllTicket,reultAllPrice,resultAllAmount);

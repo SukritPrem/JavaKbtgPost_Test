@@ -1,6 +1,7 @@
 package com.kbtg.bootcamp.posttest.user;
 
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
+import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,20 +34,20 @@ public class UserController {
             );
     }
 
-//    @GetMapping("/{userId}/lotteries")
-//    public ReturnResultAllToUser UserGetAllTicket(@PathVariable  @Pattern(regexp = "\\d{10}") String userId) throws NotFoundException {
-//        return userService.allTotalTicket(userId);
-//    }
-//
-//    @ResponseBody
-//    @DeleteMapping("/{userId}/lotteries/{ticketId}")
-//    public Map<String, String> UserDeleteTicket(@PathVariable  @Pattern(regexp = "\\d{10}") String userId,
-//                                              @PathVariable  @Pattern(regexp = "\\d{6}") String ticketId) throws NotFoundException {
-//        UserTicket userTicket = userService.deleteTicket(userId, ticketId);
-//        return Map.of(
-//                "ticket", userTicket.getTicket()
-//        );
-//    }
+    @GetMapping("/{userId}/lotteries")
+    public ReturnResultAllToUser UserGetAllTicket(@PathVariable  @Pattern(regexp = "\\d{10}") String userId) throws NotFoundException {
+        return userService.allTotalTicket(userId);
+    }
+
+    @ResponseBody
+    @DeleteMapping("/{userId}/lotteries/{ticketId}")
+    public Map<String, String> UserDeleteTicket(@PathVariable  @Pattern(regexp = "\\d{10}") String userId,
+                                              @PathVariable  @Pattern(regexp = "\\d{6}") String ticketId) throws NotFoundException {
+        UserTicket userTicket = userService.deleteTicket(userId, ticketId);
+        return Map.of(
+                "ticket", userTicket.getTicket()
+        );
+    }
 
     @GetMapping("/me")
     Message me() {

@@ -14,14 +14,14 @@ public interface LotteryRepository extends JpaRepository<Lottery, Long>  {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Lottery SET amount =:amount WHERE ticket =:ticket")
-    void updateAmountByticket(String amount, String ticket);
+    @Query("UPDATE Lottery SET amount =:amount  price =:price WHERE ticket =:ticket")
+    void updateAmountAndPriceByticket(String amount, String ticket, String price);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE Lottery SET price =:price WHERE ticket =:ticket")
-    void updatePriceByticket(String price, String ticket);
-
+//    @Modifying
+//    @Transactional
+//    @Query("UPDATE Lottery SET price =:price WHERE ticket =:ticket")
+//    void updatePriceByticket(String price, String ticket);
+//
 
     Optional<Lottery> findByTicket(String ticket);
 //    UPDATE lottery SET amount='0' WHERE ticket='00001';

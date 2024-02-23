@@ -46,12 +46,12 @@ public class LotteryService {
 
     public UserTicket createNewLotteryByAdmin(LotteryRequest lotteryRequest) throws NotFoundException {
         Optional<Lottery> lotteryOptional = lotteryRepository.findByTicket(lotteryRequest.getTicket());
-        Lottery newLottery = new Lottery();
-        newLottery.setTicket(lotteryRequest.getTicket());
-        newLottery.setPrice(Integer.toString(lotteryRequest.getPrice()));
-        newLottery.setAmount(Integer.toString(lotteryRequest.getAmount()));
+        Lottery newLottery = new Lottery(
+                Integer.toString(lotteryRequest.getPrice()),
+                lotteryRequest.getTicket(),
+                Integer.toString(lotteryRequest.getAmount())
+                );
         //assume admin have 1 person
-        System.out.print(userRepository.findByroles("ADMIN") + "I'm here\n");
         Optional<User> user = userRepository.findByroles("ADMIN");
 
         if(lotteryOptional.isEmpty())
@@ -68,8 +68,12 @@ public class LotteryService {
             //update lottery
             //update to table lottery
             String totalAmountString = Integer.toString(Integer.parseInt(lottery.getAmount()) + Integer.parseInt(newLottery.getAmount()));
-            lotteryRepository.updateAmountByticket(totalAmountString,lottery.getTicket());
-            lotteryRepository.updatePriceByticket(lottery.getPrice(),lottery.getTicket());
+            lotteryRepository.updateAmountAndPriceByticket(
+                    totalAmountString,
+                    lottery.getPrice(),
+                    lottery.getTicket()
+            );
+
 
             //Save user_ticket
             return userService.saveUserActionReturnUserTicket(

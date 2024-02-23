@@ -40,5 +40,17 @@ public interface UserTicketStoreRepository extends JpaRepository<UserTicketStore
     @Transactional
     @Query(value ="DELETE FROM user_ticket_store WHERE ticket=:ticket AND userid =:userid", nativeQuery = true)
     void deleteTicketByuserId(@Param("ticket") String ticket,@Param("userid") String userid);
+
+    @Modifying@Transactional
+    @Query(value = "SELECT DISTINCT ticket FROM user_ticket_store WHERE userId=:userId",nativeQuery = true)
+    List<String> findDistinctTicketByUserId(@Param("userId") String userId);
+    @Modifying
+    @Transactional
+    @Query(value = "SELECT DISTINCT amount FROM user_ticket_store WHERE userId=:userId", nativeQuery = true)
+    List<String> sumAmountByUserId(@Param("userId") String userId);
+    @Modifying
+    @Transactional
+    @Query(value = "SELECT DISTINCT price FROM user_ticket_store WHERE userId=:userId", nativeQuery = true)
+    List<String> sumPriceByUserId(@Param("userId") String userId);
 }
 

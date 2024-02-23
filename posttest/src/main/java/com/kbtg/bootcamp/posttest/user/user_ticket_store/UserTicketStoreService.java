@@ -2,15 +2,15 @@ package com.kbtg.bootcamp.posttest.user.user_ticket_store;
 
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
+import com.kbtg.bootcamp.posttest.user.ReturnResultAllToUser;
 import com.kbtg.bootcamp.posttest.user.userOperationService.UserOperationsService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserTicketStoreService {
-
-
 
 
     private UserTicketStoreRepository userTicketStoreRepository;
@@ -31,13 +31,15 @@ public class UserTicketStoreService {
                 userOperationsService.getLottery().getTicket()
         );
             if (userTicketStoreOptional.isEmpty()) {
-                System.out.print("HelloHiService\n");
+//                System.out.print("HelloHiService\n");
                 //insert ticket to user_ticket_store;
                 UserTicketStore userTicketStore = new UserTicketStore(
                         userOperationsService.getUser().getUserId(),
                         userOperationsService.getLottery().getTicket(),
                         userOperationsService.getLottery().getAmount(),
-                        userOperationsService.getLottery().getPrice());
+                        userOperationsService.getLottery().getPrice()
+                );
+
                 userTicketStoreRepository.save(userTicketStore);
                 userOperationsService.setUserTicketStore(userTicketStore);
                 //update database zero because assume User by all lottery;
@@ -47,7 +49,6 @@ public class UserTicketStoreService {
                 userOperationsService.setAction("BUY");
                 return userOperationsService;
             } else {
-//                UserTicketStore userLottery = userTicketStoreOptional.get();
                 //Update database zero because assume User buy all lottery;
                 userOperationsService.setUserTicketStore(userTicketStoreOptional.get());
                 lotteryRepository.updateAmountZeroByticket(userOperationsService.getLottery().getTicket());
@@ -62,8 +63,41 @@ public class UserTicketStoreService {
             }
         }catch (Exception exception)
         {
-            throw new NotFoundException("Error From UserTicketStoreService Layer.");
+            throw new NotFoundException("Error From UserTicketStoreService Layer When Update.");
         }
     }
 
+    public ReturnResultAllToUser SumTicketAndCostAndAmount(String userid) throws NotFoundException {
+        List<UserTicketStore> user = userTicketStoreRepository.findByuserid(userid);
+        if(!user.isEmpty()) {
+            return new ReturnResultAllToUser(
+                    userTicketStoreRepository.findDistinctTicketByUserId(userid),
+                    userTicketStoreRepository.sumPriceByUserId(userid)
+                            .stream()
+                            .mapToInt(Integer::parseInt) // Convert each string to an integer
+                            .sum(),
+                    userTicketStoreRepository.sumAmountByUserId(userid)
+                            .stream()
+                            .mapToInt(Integer::parseInt) // Convert each string to an integer
+                            .sum()
+            );
+        }
+        else
+            throw new NotFoundException("Not found User in UserTicketStoreService Layer");
+    }
+
+    public UserTicketStore deleteTicketInUserTicketStore(String userId, String ticket) throws NotFoundException
+    {
+        Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(userId, ticket);
+        if(userTicketStoreOptional.isPresent())
+        {
+            userTicketStoreRepository.deleteTicketByuserId(ticket,userId);
+            return userTicketStoreOptional.get();
+        }
+        else
+            throw new NotFoundException("UserTicketStore Not Found");
+    }
+
+
 }
+
