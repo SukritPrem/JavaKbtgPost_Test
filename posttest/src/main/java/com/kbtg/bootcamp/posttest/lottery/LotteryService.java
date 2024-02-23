@@ -22,12 +22,15 @@ public class LotteryService {
     private UserService userService;
     private UserTicketRepository userTicketRepository;
 
+
     public LotteryService(LotteryRepository lotteryRepository,
                           UserTicketRepository userTicketRepository,
-                          UserService userService) {
+                          UserService userService,
+                          UserRepository userRepository) {
         this.lotteryRepository = lotteryRepository;
         this.userTicketRepository = userTicketRepository;
         this.userService = userService;
+        this.userRepository =userRepository;
     }
 
     public List<String> getAll_lottery() {
@@ -48,6 +51,7 @@ public class LotteryService {
         newLottery.setPrice(Integer.toString(lotteryRequest.getPrice()));
         newLottery.setAmount(Integer.toString(lotteryRequest.getAmount()));
         //assume admin have 1 person
+        System.out.print(userRepository.findByroles("ADMIN") + "I'm here\n");
         Optional<User> user = userRepository.findByroles("ADMIN");
 
         if(lotteryOptional.isEmpty())

@@ -1,67 +1,68 @@
 package com.kbtg.bootcamp.posttest.user.user_ticket_store;
 
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
-import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
-import com.kbtg.bootcamp.posttest.user.User;
-import com.kbtg.bootcamp.posttest.user.UserService;
+import com.kbtg.bootcamp.posttest.user.userOperationService.UserOperationsService;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class UserTicketStoreService {
 
-    private Lottery lottery;
-    private User user;
+
+
 
     private UserTicketStoreRepository userTicketStoreRepository;
 
     private LotteryRepository lotteryRepository;
 
-    private final UserService userService;
-    UserTicketStoreService(UserService userService)
-    {
-        this.userService = userService;
-    }
-    public Integer updateUserTicketAndLotteryAndReturnUserId(Lottery lottery, User user) throws NotFoundException
-    {
-        Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(user.getUserId(),lottery.getTicket());
-        if(userTicketStoreOptional.isEmpty())
-        {
-            //insert ticket to user_ticket_store;
-            userTicketStoreRepository.save(new UserTicketStore(
-                    user.getUserId(),
-                    lottery.getTicket(),
-                    lottery.getAmount(),
-                    lottery.getPrice()));
-            //update database zero because assume User by all lottery;
-            lotteryRepository.updateAmountZeroByticket(lottery.getTicket());
 
-            //save user_action
-            return userService.saveUserActionReturnId("BUY",
-                    Integer.parseInt(lottery.getAmount()),
-                    user,
-                    lottery);
-        }
-        else
+    public UserTicketStoreService(UserTicketStoreRepository userTicketStoreRepository,LotteryRepository lotteryRepository)
+    {
+        this.userTicketStoreRepository =userTicketStoreRepository;
+        this.lotteryRepository =lotteryRepository;
+    }
+    public UserOperationsService updateUserTicketAndLotteryAndReturnUserId(UserOperationsService userOperationsService) throws NotFoundException
+    {
+        try {
+        Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(
+                userOperationsService.getUser().getUserId(),
+                userOperationsService.getLottery().getTicket()
+        );
+            if (userTicketStoreOptional.isEmpty()) {
+                System.out.print("HelloHiService\n");
+                //insert ticket to user_ticket_store;
+                UserTicketStore userTicketStore = new UserTicketStore(
+                        userOperationsService.getUser().getUserId(),
+                        userOperationsService.getLottery().getTicket(),
+                        userOperationsService.getLottery().getAmount(),
+                        userOperationsService.getLottery().getPrice());
+                userTicketStoreRepository.save(userTicketStore);
+                userOperationsService.setUserTicketStore(userTicketStore);
+                //update database zero because assume User by all lottery;
+                lotteryRepository.updateAmountZeroByticket(
+                        userOperationsService.getLottery().getTicket()
+                );
+                userOperationsService.setAction("BUY");
+                return userOperationsService;
+            } else {
+//                UserTicketStore userLottery = userTicketStoreOptional.get();
+                //Update database zero because assume User buy all lottery;
+                userOperationsService.setUserTicketStore(userTicketStoreOptional.get());
+                lotteryRepository.updateAmountZeroByticket(userOperationsService.getLottery().getTicket());
+                userOperationsService.setAmountInUseTicketStore();
+                //Update amount
+                userTicketStoreRepository.updateAmountByuserIdAndTicket(
+                        userOperationsService.getUserTicketStore().getAmount(),
+                        userOperationsService.getUser().getUserId(),
+                        userOperationsService.getUserTicketStore().getTicket());
+                userOperationsService.setAction("BUY AND UPDATE");
+                return userOperationsService;
+            }
+        }catch (Exception exception)
         {
-            UserTicketStore userLottery = userTicketStoreOptional.get();
-            //Update database zero because assume User buy all lottery;
-            lotteryRepository.updateAmountZeroByticket(lottery.getTicket());
-            Integer totalAmount = Integer.parseInt(userLottery.getAmount()) +
-                    Integer.parseInt(lottery.getAmount());
-            //Update amount
-            userTicketStoreRepository.updateAmountByuserIdAndTicket(Integer.toString(totalAmount),
-                    userLottery.getUserid(),
-                    lottery.getTicket());
-            //save user_action
-            userService.saveUserAction("BUY",
-                    Integer.parseInt(lottery.getAmount()),
-                    user,
-                    lottery);
-            //save user_action
-            return userService.saveUserActionReturnId("UPDATE",
-                    Integer.parseInt(lottery.getAmount()),
-                    user, lottery);
+            throw new NotFoundException("Error From UserTicketStoreService Layer.");
         }
     }
 
