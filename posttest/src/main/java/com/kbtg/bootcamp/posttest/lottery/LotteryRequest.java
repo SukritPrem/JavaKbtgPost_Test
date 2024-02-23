@@ -13,12 +13,13 @@ public class LotteryRequest {
 
     @NotNull(message = "Price must not be null")
     @Positive(message = "Price must be positive")
-    @Max(value = Integer.MAX_VALUE, message = "Price must not exceed the maximum allowed value")
+    @Max(value = 300, message = "Price must not exceed the maximum allowed value Max:300")
+    @Min(value = 10, message = "Price must not exceed the min allowed value Min:10")
     private Integer price;
 
     @NotNull(message = "amount must not be null")
     @Positive(message = "amount must be positive")
-    @Max(value = Integer.MAX_VALUE, message = "amount must not exceed the maximum allowed value")
+    @Max(value = 300, message = "amount must not exceed the maximum allowed value Max:300")
     private Integer amount;
 
 
