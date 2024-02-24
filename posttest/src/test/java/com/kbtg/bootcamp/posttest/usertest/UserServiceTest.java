@@ -1,16 +1,18 @@
 package com.kbtg.bootcamp.posttest.usertest;
 
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
+import com.kbtg.bootcamp.posttest.exception.Status200Exception;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
 import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.UserRepository;
 import com.kbtg.bootcamp.posttest.user.UserService;
-import com.kbtg.bootcamp.posttest.user.userOperationService.UserOperationsService;
+import com.kbtg.bootcamp.posttest.user.userOperation.UserOperation;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicketRepository;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,8 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -44,7 +45,7 @@ public class UserServiceTest {
     private UserService userService;
 
     @Test
-    void testCheckUserAndLottery() throws NotFoundException {
+    void testCheckUserAndLottery() throws NotFoundException, Status200Exception {
         // Mock user and lottery data
         User user = new User(1,"1234567890","USER","123454321234"); // Assuming admin user is present
         Lottery lottery = new Lottery("123","123456","234");
@@ -52,11 +53,11 @@ public class UserServiceTest {
         when(userRepository.findByuserid("1234567890")).thenReturn(Optional.of(user));
         when(lotteryRepository.findByTicket("123")).thenReturn(Optional.of(lottery));
 
-        UserOperationsService userOperationsService = userService.checkUserAndLottery("1234567890", "123");
+        UserOperation userOperation = userService.checkUserAndLottery("1234567890", "123");
 
-        assertNotNull(userOperationsService);
-        assertEquals(user, userOperationsService.getUser());
-        assertEquals(lottery, userOperationsService.getLottery());
+        assertNotNull(userOperation);
+        assertEquals(user, userOperation.getUser());
+        assertEquals(lottery, userOperation.getLottery());
 
         verify(userRepository).findByuserid("1234567890");
         verify(lotteryRepository).findByTicket("123");
@@ -67,23 +68,23 @@ public class UserServiceTest {
         // Arrange
         SpyUserServiceTest spyUserServiceTest = new SpyUserServiceTest(userRepository,lotteryRepository,userTicketRepository,userTicketStoreService);
 
-        UserOperationsService userOperationsService = spyUserServiceTest.checkUserAndLottery("dummy","dummy");
+        UserOperation userOperation = spyUserServiceTest.checkUserAndLottery("dummy","dummy");
 
         UserTicket userTicket = new UserTicket(
-                userOperationsService.getUser().getUserId(),
-                userOperationsService.getUser().getRoles(),
+                userOperation.getUser().getUserId(),
+                userOperation.getUser().getRoles(),
                 "BUY",
-                userOperationsService.getLottery().getTicket(),
-                userOperationsService.getLottery().getAmount(),
-                userOperationsService.getLottery().getPrice());
+                userOperation.getLottery().getTicket(),
+                userOperation.getLottery().getAmount(),
+                userOperation.getLottery().getPrice());
         userTicket.setId(1);
 
-        doReturn(userOperationsService).when(userTicketStoreService).updateUserTicketAndLotteryAndReturnUserId(any());
+        doReturn(userOperation).when(userTicketStoreService).updateUserTicketAndLotteryAndReturnUserId(any());
         doReturn(userTicket).when(userTicketRepository).save(any());
 
         Integer result = spyUserServiceTest.userBuyTicket(
-                userOperationsService.getUser().getUserId(),
-                userOperationsService.getLottery().getTicket()
+                userOperation.getUser().getUserId(),
+                userOperation.getLottery().getTicket()
         );
 
         assertEquals(userTicket.getId(), result);
@@ -92,8 +93,66 @@ public class UserServiceTest {
         verify(userTicketRepository).save(any());
     }
 
+    @Test
+    @DisplayName("When User delete Ticket success")
+    void deleteTicket_Success() throws NotFoundException {
 
+        User user = new User(1,"12345689","USER","23432134321234");
+        UserTicketStore userTicketStore = new UserTicketStore(user.getUserId(),"123456","9","27");
+        UserTicket expected = new UserTicket(
+                userTicketStore.getUserid(),
+                "USER",
+                "DELETE",
+                userTicketStore.getTicket(),
+                userTicketStore.getAmount(),
+                userTicketStore.getPrice()
+        );
+        expected.setId(1);
+        when(userRepository.findByuserid(user.getUserId())).thenReturn(Optional.of(user));
+        doReturn(userTicketStore).when(userTicketStoreService).deleteTicketInUserTicketStore(any(),any());
+        when(userTicketRepository.save(any())).thenReturn(expected);
+
+        UserTicket userTicket = userService.deleteTicket(user.getUserId(),"123456");
+
+        assertEquals(expected, userTicket);
+
+    }
+
+    @Test
+    @DisplayName("When User Not found")
+    void deleteTicket_UserNotFound() throws NotFoundException {
+        // Arrange
+        when(userRepository.findByuserid("userId"))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> userService.deleteTicket("userId", "ticket"));
+
+        // Verify interactions
+        verify(userRepository, times(1)).findByuserid("userId");
+        verify(userTicketStoreService, never()).deleteTicketInUserTicketStore(any(), any());
+        verify(userTicketRepository, never()).save(any());
+    }
 }
+
+//public UserTicket deleteTicket(String userId,String ticket) throws NotFoundException {
+//
+//    Optional<User> user = userRepository.findByuserid(userId);
+//    if(user.isEmpty())
+//        throw new NotFoundException("Ticket not found or User not found");
+//    UserTicketStore userTicketStore = userTicketStoreService.deleteTicketInUserTicketStore(userId,ticket);
+//
+//    return  userTicketRepository.save(
+//            new UserTicket(
+//                    userTicketStore.getUserid(),
+//                    "USER",
+//                    "DELETE",
+//                    userTicketStore.getTicket(),
+//                    userTicketStore.getAmount(),
+//                    userTicketStore.getPrice()
+//            )
+//    );
+//}
 
 class SpyUserServiceTest extends UserService
 {
@@ -105,7 +164,7 @@ class SpyUserServiceTest extends UserService
     }
 
     @Override
-    public UserOperationsService checkUserAndLottery(String userId,String ticketId) throws NotFoundException
+    public UserOperation checkUserAndLottery(String userId, String ticketId) throws NotFoundException
     {
         User user = new User(1,"1234567890","USER","123454321234"); // Assuming admin user is present
         Lottery lottery = new Lottery("123","123456","234");
@@ -113,12 +172,12 @@ class SpyUserServiceTest extends UserService
                 lottery.getTicket(),
                 lottery.getPrice(),
                 lottery.getAmount());
-        UserOperationsService userOperationsService = new UserOperationsService();
-        userOperationsService.setLottery(lottery);
-        userOperationsService.setUser(user);
-        userOperationsService.setUserTicketStore(userTicketStore);
-        userOperationsService.setAction("BUY");
-        return userOperationsService;
+        UserOperation userOperation = new UserOperation();
+        userOperation.setLottery(lottery);
+        userOperation.setUser(user);
+        userOperation.setUserTicketStore(userTicketStore);
+        userOperation.setAction("BUY");
+        return userOperation;
     };
 
     @Override

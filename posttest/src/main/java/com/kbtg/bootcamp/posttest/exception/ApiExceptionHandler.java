@@ -25,6 +25,15 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler({Status200Exception.class
+    })
+    public ResponseEntity<Object> handleStatus200Exception(Status200Exception e)
+    {
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                e.getMessage(), HttpStatus.OK, ZonedDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+    }
     @ExceptionHandler({ServerInternalErrorException.class})
     public ResponseEntity<Object> handleServerInternalErrorException(NotFoundException e) {
         ApiErrorResponse errorResponse = new ApiErrorResponse(

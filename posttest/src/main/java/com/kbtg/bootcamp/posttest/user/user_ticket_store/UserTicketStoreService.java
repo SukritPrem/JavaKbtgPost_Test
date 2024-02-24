@@ -4,7 +4,8 @@ import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.exception.ServerInternalErrorException;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
 import com.kbtg.bootcamp.posttest.user.ReturnResultAllToUser;
-import com.kbtg.bootcamp.posttest.user.userOperationService.UserOperationsService;
+import com.kbtg.bootcamp.posttest.user.userOperation.UserOperation;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,42 +25,46 @@ public class UserTicketStoreService {
         this.userTicketStoreRepository =userTicketStoreRepository;
         this.lotteryRepository =lotteryRepository;
     }
-    public UserOperationsService updateUserTicketAndLotteryAndReturnUserId(UserOperationsService userOperationsService) throws ServerInternalErrorException
+
+    @Transactional
+    public UserOperation updateUserTicketAndLotteryAndReturnUserId(UserOperation userOperation) throws ServerInternalErrorException
     {
         try {
         Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(
-                userOperationsService.getUser().getUserId(),
-                userOperationsService.getLottery().getTicket()
+                userOperation.getUser().getUserId(),
+                userOperation.getLottery().getTicket()
         );
             if (userTicketStoreOptional.isEmpty()) {
                 //insert ticket to user_ticket_store;
                 UserTicketStore userTicketStore = new UserTicketStore(
-                        userOperationsService.getUser().getUserId(),
-                        userOperationsService.getLottery().getTicket(),
-                        userOperationsService.getLottery().getAmount(),
-                        userOperationsService.getLottery().getPrice()
+                        userOperation.getUser().getUserId(),
+                        userOperation.getLottery().getTicket(),
+                        userOperation.getLottery().getAmount(),
+                        userOperation.getLottery().getPrice()
                 );
-
                 userTicketStoreRepository.save(userTicketStore);
-                userOperationsService.setUserTicketStore(userTicketStore);
+
+                userOperation.setUserTicketStore(userTicketStore);
                 //update database zero because assume User by all lottery;
                 lotteryRepository.updateAmountZeroByticket(
-                        userOperationsService.getLottery().getTicket()
+                        userOperation.getLottery().getTicket()
                 );
-                userOperationsService.setAction("BUY");
-                return userOperationsService;
+                userOperation.setAction("BUY");
+                return userOperation;
             } else {
+                //user Operation get value userTicketStore
+                userOperation.setUserTicketStore(userTicketStoreOptional.get());
                 //Update database zero because assume User buy all lottery;
-                userOperationsService.setUserTicketStore(userTicketStoreOptional.get());
-                lotteryRepository.updateAmountZeroByticket(userOperationsService.getLottery().getTicket());
-                userOperationsService.setAmountInUseTicketStore();
-                //Update amount
+                lotteryRepository.updateAmountZeroByticket(userOperation.getLottery().getTicket());
+                //Re value Amount In user ticketStore when use buy new one
+                userOperation.setAmountInUseTicketStore();
+                //Update userTicketStore
                 userTicketStoreRepository.updateAmountByuserIdAndTicket(
-                        userOperationsService.getUserTicketStore().getAmount(),
-                        userOperationsService.getUser().getUserId(),
-                        userOperationsService.getUserTicketStore().getTicket());
-                userOperationsService.setAction("BUY AND UPDATE");
-                return userOperationsService;
+                        userOperation.getUserTicketStore().getAmount(),
+                        userOperation.getUser().getUserId(),
+                        userOperation.getUserTicketStore().getTicket());
+                userOperation.setAction("BUY AND UPDATE");
+                return userOperation;
             }
         }catch (ServerInternalErrorException exception)
         {

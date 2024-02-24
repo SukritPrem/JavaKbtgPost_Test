@@ -1,16 +1,17 @@
-package com.kbtg.bootcamp.posttest.user.userOperationService;
+package com.kbtg.bootcamp.posttest.user.userOperation;
 
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class UserOperationsService {
+@Component
+public class UserOperation {
 
     private Lottery lottery;
     private String action;
 
+    private String totalAmount;
     private User user;
     private UserTicketStore userTicketStore;
     public User getUser() {
@@ -50,6 +51,14 @@ public class UserOperationsService {
 
     public void setAction(String action) {
         this.action = action;
+    }
+
+    public String getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(String totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
 

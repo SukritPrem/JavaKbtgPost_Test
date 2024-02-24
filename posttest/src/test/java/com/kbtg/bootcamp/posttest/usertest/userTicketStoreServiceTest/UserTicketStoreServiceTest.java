@@ -6,7 +6,7 @@ import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
 import com.kbtg.bootcamp.posttest.user.ReturnResultAllToUser;
 import com.kbtg.bootcamp.posttest.user.User;
-import com.kbtg.bootcamp.posttest.user.userOperationService.UserOperationsService;
+import com.kbtg.bootcamp.posttest.user.userOperation.UserOperation;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreRepository;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 public class UserTicketStoreServiceTest {
 
     @Mock
-    UserOperationsService userOperationsService;
+    UserOperation userOperation;
 
     @Mock
     UserTicketStoreRepository userTicketStoreRepository;
@@ -49,19 +49,19 @@ public class UserTicketStoreServiceTest {
     public void testUpdateUserTicketAndLotteryAndReturnUserId_whenUserTicketStoreNotFound()
     {
         // Mocking userOperationsService methods
-        UserOperationsService userOperationsService =new UserOperationsService();
+        UserOperation userOperation =new UserOperation();
         User user = new User(1,"1234567890","USER","123454321234"); // Assuming admin user is present
         Lottery lottery = new Lottery("123","123456","234");
-        userOperationsService.setUser(user);
-        userOperationsService.setLottery(lottery);
+        userOperation.setUser(user);
+        userOperation.setLottery(lottery);
 
         // Mocking repository behavior
         when(userTicketStoreRepository.findByUseridAndTicket(any(), any())).thenReturn(Optional.empty());
 
         // Call the method under test
-        UserOperationsService result = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperationsService);
+        UserOperation result = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperation);
 
-        assertEquals(userOperationsService, result);
+        assertEquals(userOperation, result);
         assertEquals("BUY", result.getAction());
 
         verify(userTicketStoreRepository).save(any(UserTicketStore.class));
@@ -74,11 +74,11 @@ public class UserTicketStoreServiceTest {
     public void testWhenUserBuyCaseUpdate()
     {
         // Mocking userOperationsService methods
-        UserOperationsService userOperationsService =new UserOperationsService();
+        UserOperation userOperation =new UserOperation();
         User user = new User(1,"1234567890","USER","123454321234"); // Assuming admin user is present
         Lottery lottery = new Lottery("123","123456","234");
-        userOperationsService.setUser(user);
-        userOperationsService.setLottery(lottery);
+        userOperation.setUser(user);
+        userOperation.setLottery(lottery);
         UserTicketStore userTicketStore= new UserTicketStore(user.getUserId(),
                 lottery.getTicket(),
                 lottery.getPrice(),
@@ -88,9 +88,9 @@ public class UserTicketStoreServiceTest {
         when(userTicketStoreRepository.findByUseridAndTicket(any(), any())).thenReturn(Optional.of(userTicketStore));
 
         // Call the method under test
-        UserOperationsService result = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperationsService);
+        UserOperation result = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperation);
 
-        assertEquals(userOperationsService, result);
+        assertEquals(userOperation, result);
         assertEquals("BUY AND UPDATE", result.getAction());
 
         verify(lotteryRepository).updateAmountZeroByticket(any());
@@ -101,11 +101,11 @@ public class UserTicketStoreServiceTest {
     public void MakeSureUserOperationGetUserTicketStoreAlready()
     {
         // Mocking userOperationsService methods
-        UserOperationsService userOperationsService =new UserOperationsService();
+        UserOperation userOperation =new UserOperation();
         User user = new User(1,"1234567890","USER","123454321234"); // Assuming admin user is present
         Lottery lottery = new Lottery("123","123456","234");
-        userOperationsService.setUser(user);
-        userOperationsService.setLottery(lottery);
+        userOperation.setUser(user);
+        userOperation.setLottery(lottery);
         UserTicketStore userTicketStore= new UserTicketStore(user.getUserId(),
                 lottery.getTicket(),
                 lottery.getPrice(),
@@ -116,7 +116,7 @@ public class UserTicketStoreServiceTest {
 
         // Call the method under test
         Integer expect = Integer.parseInt(lottery.getAmount()) + Integer.parseInt(userTicketStore.getAmount());
-        UserOperationsService result = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperationsService);
+        UserOperation result = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperation);
 
         assertEquals(Integer.toString(expect), result.getUserTicketStore().getAmount());
         assertEquals("BUY AND UPDATE", result.getAction());
@@ -127,11 +127,11 @@ public class UserTicketStoreServiceTest {
     @Test
     public void testUpdateUserTicketAndLotteryAndReturnUserId_throwsServerInternalErrorException() {
         // Mocking userOperationsService methods
-        UserOperationsService userOperationsService =new UserOperationsService();
+        UserOperation userOperation =new UserOperation();
         User user = new User(1,"1234567890","USER","123454321234"); // Assuming admin user is present
         Lottery lottery = new Lottery("123","123456","234");
-        userOperationsService.setUser(user);
-        userOperationsService.setLottery(lottery);
+        userOperation.setUser(user);
+        userOperation.setLottery(lottery);
 
         // Mocking repository behavior to throw ServerInternalErrorException
         when(userTicketStoreRepository.findByUseridAndTicket(any(), any()))
@@ -139,7 +139,7 @@ public class UserTicketStoreServiceTest {
 
         // Assertions
         assertThrows(ServerInternalErrorException.class, () -> {
-            userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperationsService);
+            userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperation);
         });
     }
 
