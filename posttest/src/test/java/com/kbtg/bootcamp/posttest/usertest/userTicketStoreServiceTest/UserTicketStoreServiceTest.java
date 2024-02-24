@@ -1,8 +1,10 @@
 package com.kbtg.bootcamp.posttest.usertest.userTicketStoreServiceTest;
 
+import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.exception.ServerInternalErrorException;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
+import com.kbtg.bootcamp.posttest.user.ReturnResultAllToUser;
 import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.userOperationService.UserOperationsService;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
@@ -15,13 +17,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserTicketStoreServiceTest {
@@ -139,6 +143,50 @@ public class UserTicketStoreServiceTest {
         });
     }
 
+    @Test
+    public void testSumTicketAndCostAndAmount_whenUserFound() throws NotFoundException {
+        // Mocking userTicketStoreRepository behavior
+        UserTicketStore userTicketStore1 = new UserTicketStore();
+        userTicketStore1.setAmount("69");
+        userTicketStore1.setTicket("123456");
+        userTicketStore1.setUserid("1234567890");
+        userTicketStore1.setPrice("400");
+        UserTicketStore userTicketStore = new UserTicketStore();
+        userTicketStore.setAmount("69");
+        userTicketStore.setTicket("123457");
+        userTicketStore.setUserid("1234567890");
+        userTicketStore.setPrice("400");
+        List<UserTicketStore> listUser = new ArrayList<>();
+        listUser.add(userTicketStore);
+        listUser.add(userTicketStore1);
 
+        List<String> amount = listUser.stream().map(user -> user.getAmount()).collect(Collectors.toList());
+
+        Integer cost =  listUser.stream().mapToInt(userLottery -> Integer.parseInt(userLottery.getPrice())
+                        * Integer.parseInt(userLottery.getAmount())).sum();
+
+        Integer amountInt =  listUser.stream()
+                .mapToInt(userLottery -> Integer.parseInt(userLottery.getAmount())).sum();
+
+        List<String> tickets = listUser.stream().map(user -> user.getTicket()).collect(Collectors.toList());
+
+        ReturnResultAllToUser expect = new ReturnResultAllToUser(tickets,cost,amountInt);
+
+
+        when(userTicketStoreRepository.findByuserid(anyString())).thenReturn(listUser);
+        when(userTicketStoreRepository.findDistinctTicketByUserId(anyString())).thenReturn(tickets);
+        when(userTicketStoreRepository.sumPriceByUserId(anyString())).thenReturn(listUser);
+        when(userTicketStoreRepository.sumAmountByUserId(anyString())).thenReturn(amount);
+
+
+
+        // Call the method under test
+        ReturnResultAllToUser result = userTicketStoreService.SumTicketAndCostAndAmount("123456");
+
+        assertEquals(expect.getTickets(),result.getTickets());
+        assertEquals(expect.getCost(),result.getCost());
+        assertEquals(expect.getCount(),result.getCount());
+
+    }
 }
 
