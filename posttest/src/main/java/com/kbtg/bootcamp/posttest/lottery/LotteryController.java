@@ -14,15 +14,13 @@ import java.util.Map;
 @RequestMapping("/lotteries")
 public class LotteryController {
 
+    @Autowired
     private LotteryService lotteryService;
 
-    @Autowired
-    private LotteryRepository lotteryRepository;
 
-    public LotteryController(LotteryService lotteryService, LotteryRepository lotteryRepository)
+    public LotteryController(LotteryService lotteryService)
     {
         this.lotteryService = lotteryService;
-        this.lotteryRepository = lotteryRepository;
     }
 
 
