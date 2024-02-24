@@ -74,7 +74,8 @@ public class UserTicketStoreService {
                     userTicketStoreRepository.findDistinctTicketByUserId(userid),
                     userTicketStoreRepository.sumPriceByUserId(userid)
                             .stream()
-                            .mapToInt(Integer::parseInt) // Convert each string to an integer
+                            .mapToInt(userLottery -> Integer.parseInt(userLottery.getAmount()) *
+                                Integer.parseInt(userLottery.getPrice()))
                             .sum(),
                     userTicketStoreRepository.sumAmountByUserId(userid)
                             .stream()

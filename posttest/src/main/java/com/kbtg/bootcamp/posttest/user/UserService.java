@@ -9,12 +9,12 @@ import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicketRepository;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class UserService {
     private  final UserRepository userRepository;
 

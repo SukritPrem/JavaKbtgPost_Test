@@ -56,10 +56,11 @@ public class LotteryService {
 
         if(lotteryOptional.isEmpty())
         {
-            return CreateNewLotteryAndReturnUserticket(lotteryRepository,
-                    userService,
-                    newLottery,
-                    user.get());
+            lotteryRepository.save(newLottery);
+//            return CreateNewLotteryAndReturnUserticket(lotteryRepository,
+//                    userService,
+//                    newLottery,
+//                    user.get());
         }
         else
         {
@@ -68,6 +69,8 @@ public class LotteryService {
             //update lottery
             //update to table lottery
             String totalAmountString = Integer.toString(Integer.parseInt(lottery.getAmount()) + Integer.parseInt(newLottery.getAmount()));
+//            System.out.print(totalAmountString + "I" + lottery.getPrice() + "I"+ lottery.getTicket());
+//            newLottery.setAmount(totalAmountString);
             lotteryRepository.updateAmountAndPriceByticket(
                     totalAmountString,
                     lottery.getPrice(),
@@ -75,14 +78,21 @@ public class LotteryService {
             );
 
 
-            //Save user_ticket
-            return userService.saveUserActionReturnUserTicket(
-                    "ADD",
-                    Integer.parseInt(totalAmountString),
-                    user.get(),
-                    lottery
-            );
+//            //Save user_ticket
+//            return userService.saveUserActionReturnUserTicket(
+//                    "ADD",
+//                    Integer.parseInt(totalAmountString),
+//                    user.get(),
+//                    lottery
+//            );
         }
+        //Save user_ticket
+        return userService.saveUserActionReturnUserTicket(
+                "ADD",
+                Integer.parseInt(newLottery.getAmount()),
+                user.get(),
+                newLottery
+        );
     }
 
     public UserTicket CreateNewLotteryAndReturnUserticket(LotteryRepository lotteryRepository,
