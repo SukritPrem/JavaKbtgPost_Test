@@ -33,13 +33,14 @@ public class UserService {
         this.userTicketStoreService =userTicketStoreService;
     }
 
+
     public List<User> getUser() {
         List<User> userList = userRepository.findAll();
         return userList;
     }
 
 
-    public UserOperationsService CheckUserAndLottery(String userId,String ticketId) throws NotFoundException {
+    public UserOperationsService checkUserAndLottery(String userId,String ticketId) throws NotFoundException {
         Optional<User> user = userRepository.findByuserid(userId);
         Optional<Lottery> lotteryOptional = lotteryRepository.findByTicket(ticketId);
         if(user.isEmpty() || lotteryOptional.isEmpty())
@@ -55,9 +56,10 @@ public class UserService {
         return userOperationsService;
     }
 
+
     @Transactional
-    public Integer UserBuyTicket(String userId,String ticketId) throws NotFoundException {
-        UserOperationsService userOperationsService = CheckUserAndLottery(userId, ticketId);
+    public Integer userBuyTicket(String userId, String ticketId) throws NotFoundException {
+        UserOperationsService userOperationsService = checkUserAndLottery(userId, ticketId);
         userOperationsService = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperationsService);
         if (userOperationsService.getAction().equals("BUY"))
         {

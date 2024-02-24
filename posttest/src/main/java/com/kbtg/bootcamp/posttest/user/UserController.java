@@ -30,7 +30,7 @@ public class UserController {
     public  Map<String, String>  UserBuyTicket(@PathVariable  @Pattern(regexp = "\\d{10}") String userId,
                                             @PathVariable @Pattern(regexp = "\\d{6}") String ticketId) throws NotFoundException{
             return Map.of(
-                    "id", Integer.toString(userService.UserBuyTicket(userId, ticketId))
+                    "id", Integer.toString(userService.userBuyTicket(userId, ticketId))
             );
     }
 
