@@ -38,7 +38,7 @@ public class UserService {
         return userList;
     }
 
-    @Transactional
+
     public UserOperationsService CheckUserAndLottery(String userId,String ticketId) throws NotFoundException {
         Optional<User> user = userRepository.findByuserid(userId);
         Optional<Lottery> lotteryOptional = lotteryRepository.findByTicket(ticketId);
@@ -54,6 +54,8 @@ public class UserService {
         userOperationsService.setUser(user.get());
         return userOperationsService;
     }
+
+    @Transactional
     public Integer UserBuyTicket(String userId,String ticketId) throws NotFoundException {
         UserOperationsService userOperationsService = CheckUserAndLottery(userId, ticketId);
         userOperationsService = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperationsService);

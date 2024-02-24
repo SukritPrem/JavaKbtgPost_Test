@@ -1,4 +1,4 @@
-package com.kbtg.bootcamp.posttest;
+package com.kbtg.bootcamp.posttest.usetest;
 
 import com.kbtg.bootcamp.posttest.user.ReturnResultAllToUser;
 import com.kbtg.bootcamp.posttest.user.UserController;
