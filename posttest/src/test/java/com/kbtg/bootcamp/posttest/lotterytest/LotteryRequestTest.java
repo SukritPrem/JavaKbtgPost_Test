@@ -1,4 +1,4 @@
-package com.kbtg.bootcamp.posttest;
+package com.kbtg.bootcamp.posttest.lotterytest;
 
 import com.kbtg.bootcamp.posttest.lottery.LotteryRequest;
 import jakarta.validation.ConstraintViolation;

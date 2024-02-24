@@ -17,14 +17,7 @@ public interface LotteryRepository extends JpaRepository<Lottery, Long>  {
     @Query(value = "UPDATE lottery SET amount =:amount , price =:price WHERE ticket =:ticket", nativeQuery = true)
     void updateAmountAndPriceByticket(String amount, String price, String ticket);
 
-//    @Modifying
-//    @Transactional
-//    @Query("UPDATE Lottery SET price =:price WHERE ticket =:ticket")
-//    void updatePriceByticket(String price, String ticket);
-//
-
     Optional<Lottery> findByTicket(String ticket);
-//    UPDATE lottery SET amount='0' WHERE ticket='00001';
     @Modifying
     @Transactional
     @Query(value = "UPDATE lottery SET amount='0' WHERE ticket=:ticket", nativeQuery = true)

@@ -41,7 +41,7 @@ public class UserService {
     @Transactional
     public UserOperationsService CheckUserAndLottery(String userId,String ticketId) throws NotFoundException {
         Optional<User> user = userRepository.findByuserid(userId);
-        Optional<Lottery> lotteryOptional = lotteryRepository.findByticket(ticketId);
+        Optional<Lottery> lotteryOptional = lotteryRepository.findByTicket(ticketId);
         if(user.isEmpty() || lotteryOptional.isEmpty())
             throw new NotFoundException("Error user id or lottery not found");
 

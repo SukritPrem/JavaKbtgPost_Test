@@ -25,7 +25,13 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
-
+    @ExceptionHandler({ServerInternalErrorException.class})
+    public ResponseEntity<Object> handleServerInternalErrorException(NotFoundException e) {
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, ZonedDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Object> handleInvalidType(MethodArgumentTypeMismatchException e) {

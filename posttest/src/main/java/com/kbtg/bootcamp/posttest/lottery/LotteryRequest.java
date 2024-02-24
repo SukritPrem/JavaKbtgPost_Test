@@ -22,7 +22,16 @@ public class LotteryRequest {
     @Max(value = 300, message = "amount must not exceed the maximum allowed value Max:300")
     private Integer amount;
 
+    public LotteryRequest()
+    {
 
+    }
+    public LotteryRequest(String ticket,Integer price,Integer amount)
+    {
+        this.ticket = ticket;
+        this.price =price;
+        this.amount =amount;
+    }
     public String getTicket() {
         return ticket;
     }
