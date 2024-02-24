@@ -10,7 +10,6 @@ import com.kbtg.bootcamp.posttest.user.userOperationService.UserOperationsServic
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicketRepository;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
-import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreRepository;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,8 +34,6 @@ public class UserServiceTest {
 
     @Mock
     private UserTicketRepository userTicketRepository;
-    @Mock
-    private UserTicketStoreRepository userTicketStoreRepository;
 
     @Mock
     private UserTicketStoreService userTicketStoreService;

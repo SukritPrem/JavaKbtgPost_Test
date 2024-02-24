@@ -1,6 +1,7 @@
 package com.kbtg.bootcamp.posttest.user.user_ticket_store;
 
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
+import com.kbtg.bootcamp.posttest.exception.ServerInternalErrorException;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
 import com.kbtg.bootcamp.posttest.user.ReturnResultAllToUser;
 import com.kbtg.bootcamp.posttest.user.userOperationService.UserOperationsService;
@@ -23,7 +24,7 @@ public class UserTicketStoreService {
         this.userTicketStoreRepository =userTicketStoreRepository;
         this.lotteryRepository =lotteryRepository;
     }
-    public UserOperationsService updateUserTicketAndLotteryAndReturnUserId(UserOperationsService userOperationsService) throws NotFoundException
+    public UserOperationsService updateUserTicketAndLotteryAndReturnUserId(UserOperationsService userOperationsService) throws ServerInternalErrorException
     {
         try {
         Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(
@@ -60,9 +61,9 @@ public class UserTicketStoreService {
                 userOperationsService.setAction("BUY AND UPDATE");
                 return userOperationsService;
             }
-        }catch (Exception exception)
+        }catch (ServerInternalErrorException exception)
         {
-            throw new NotFoundException("Error From UserTicketStoreService Layer When Update.");
+            throw new ServerInternalErrorException("Error From UserTicketStoreService Layer When Update.");
         }
     }
 
