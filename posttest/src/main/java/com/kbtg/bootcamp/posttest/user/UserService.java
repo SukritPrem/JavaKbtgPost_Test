@@ -11,7 +11,6 @@ import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,12 +30,6 @@ public class UserService {
         this.lotteryRepository = lotteryRepository;
         this.userTicketRepository = userTicketRepository;
         this.userTicketStoreService =userTicketStoreService;
-    }
-
-
-    public List<User> getUser() {
-        List<User> userList = userRepository.findAll();
-        return userList;
     }
 
 
@@ -63,27 +56,27 @@ public class UserService {
         userOperationsService = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperationsService);
         if (userOperationsService.getAction().equals("BUY"))
         {
-            return saveUserActionReturnId(
+            return saveUserActionReturnUserTicket(
                     userOperationsService.getAction(),
                     userOperationsService.getUserTicketStore().getAmount(),
                     userOperationsService.getUser(),
                     userOperationsService.getLottery()
-            );
+            ).getId();
         }
         else if (userOperationsService.getAction().equals("BUY AND UPDATE"))
         {
-            saveUserAction(
+            saveUserActionReturnUserTicket(
                     "BUY",
                     userOperationsService.getLottery().getAmount(),
                     userOperationsService.getUser(),
                     userOperationsService.getLottery()
             );
-            return saveUserActionReturnId(
+            return saveUserActionReturnUserTicket(
                     "UPDATE",
                     userOperationsService.getUserTicketStore().getAmount(),
                     userOperationsService.getUser(),
                     userOperationsService.getLottery()
-            );
+            ).getId();
         }
         else
             throw new NotFoundException("Error User Buy Ticket");
@@ -92,7 +85,7 @@ public class UserService {
     public  ReturnResultAllToUser  allTotalTicket(String userId) throws NotFoundException {
         return userTicketStoreService.SumTicketAndCostAndAmount(userId);
     }
-//
+
     public UserTicket deleteTicket(String userId,String ticket) throws NotFoundException {
 
         Optional<User> user = userRepository.findByuserid(userId);
@@ -100,47 +93,33 @@ public class UserService {
             throw new NotFoundException("Ticket not found or User not found");
         UserTicketStore userTicketStore = userTicketStoreService.deleteTicketInUserTicketStore(userId,ticket);
 
-        return  userTicketRepository.save(new UserTicket(
-                userTicketStore.getUserid(),
-                "USER",
-                "DELETE",
-                userTicketStore.getTicket(),
-                userTicketStore.getAmount(), // Assuming totalAmount is an int
-                userTicketStore.getPrice())
+        return  userTicketRepository.save(
+                new UserTicket(
+                    userTicketStore.getUserid(),
+                    "USER",
+                    "DELETE",
+                    userTicketStore.getTicket(),
+                    userTicketStore.getAmount(),
+                    userTicketStore.getPrice()
+                )
         );
     }
 
     // Define a method to save user action
-    public void saveUserAction(String actionType, String totalAmount, User user, Lottery lottery) {
-        userTicketRepository.save(new UserTicket(
-                user.getUserId(),
-                user.getRoles(),
-                actionType,
-                lottery.getTicket(),
-                totalAmount, // Assuming totalAmount is an int
-                lottery.getPrice()));
+
+    public UserTicket saveUserActionReturnUserTicket(String actionType, String totalAmount, User user,Lottery lottery) {
+        return (userTicketRepository.save(
+                new UserTicket(
+                    user.getUserId(),
+                    user.getRoles(),
+                    actionType,
+                    lottery.getTicket(),
+                    totalAmount, // Assuming totalAmount is an int
+                    lottery.getPrice())
+            )
+        );
     }
 
-    public UserTicket saveUserActionReturnUserTicket(String actionType, int totalAmount, User user,Lottery lottery) {
-        return (userTicketRepository.save(new UserTicket(
-                user.getUserId(),
-                user.getRoles(),
-                actionType,
-                lottery.getTicket(),
-                Integer.toString(totalAmount), // Assuming totalAmount is an int
-                lottery.getPrice())));
-    }
-
-    public int saveUserActionReturnId(String actionType, String totalAmount, User user, Lottery lottery) {
-        UserTicket userTicket = userTicketRepository.save(new UserTicket(
-                user.getUserId(),
-                user.getRoles(),
-                actionType,
-                lottery.getTicket(),
-                totalAmount, // Assuming totalAmount is an int
-                lottery.getPrice()));
-        return userTicket.getId();
-    }
 }
 
 // record ReturnAllResultUserTicket(List<String> ticket, Integer price , Integer amount)

@@ -78,7 +78,7 @@ public class LotteryServiceTest {
         // Stub the behavior of dependencies
         when(userRepository.findByroles("ADMIN")).thenReturn(adminUserOptional);
         when(lotteryRepository.findByTicket(lotteryRequest.getTicket())).thenReturn(Optional.empty()); // Assuming no existing lottery
-        when(userService.saveUserActionReturnUserTicket(anyString(), anyInt(), any(User.class), any(Lottery.class))).thenReturn(userTicket1);
+        when(userService.saveUserActionReturnUserTicket(anyString(), anyString(), any(User.class), any(Lottery.class))).thenReturn(userTicket1);
 
         // Call the method under test
         UserTicket userTicket = lotteryService.createNewLotteryByAdmin(lotteryRequest);
@@ -87,7 +87,7 @@ public class LotteryServiceTest {
         assertNotNull(userTicket); // Ensure that userTicket is not null
         assertEquals(userTicket1, userTicket); // Ensure that the returned userTicket matches the expected userTicket
         verify(lotteryRepository).save(any(Lottery.class)); // Verify that lotteryRepository.save() was called with any Lottery object
-        verify(userService).saveUserActionReturnUserTicket(eq("ADD"), eq(10), eq(adminUser), any(Lottery.class)); // Verify that userService.saveUserActionReturnUserTicket() was called with specific arguments
+        verify(userService).saveUserActionReturnUserTicket(eq("ADD"), eq("10"), eq(adminUser), any(Lottery.class)); // Verify that userService.saveUserActionReturnUserTicket() was called with specific arguments
         verify(userRepository).findByroles("ADMIN"); // Verify that userRepository.findByroles() was called
         verify(lotteryRepository).findByTicket("123456"); // Verify that lotteryRepository.findByTicket() was called
     }

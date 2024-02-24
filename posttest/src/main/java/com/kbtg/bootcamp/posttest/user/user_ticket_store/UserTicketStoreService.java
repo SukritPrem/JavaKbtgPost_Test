@@ -31,7 +31,6 @@ public class UserTicketStoreService {
                 userOperationsService.getLottery().getTicket()
         );
             if (userTicketStoreOptional.isEmpty()) {
-//                System.out.print("HelloHiService\n");
                 //insert ticket to user_ticket_store;
                 UserTicketStore userTicketStore = new UserTicketStore(
                         userOperationsService.getUser().getUserId(),

@@ -1,4 +1,4 @@
-package com.kbtg.bootcamp.posttest.usetest;
+package com.kbtg.bootcamp.posttest.usertest;
 
 //public class SpyUserServiceTest extends UserServiceTest
 //{

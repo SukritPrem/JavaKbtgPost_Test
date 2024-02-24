@@ -69,7 +69,7 @@ public class LotteryService {
             }
             return userService.saveUserActionReturnUserTicket(
                     "ADD",
-                    Integer.parseInt(newLottery.getAmount()),
+                    newLottery.getAmount(),
                     user.get(),
                     newLottery
             );

@@ -1,4 +1,4 @@
-package com.kbtg.bootcamp.posttest.usetest;
+package com.kbtg.bootcamp.posttest.usertest;
 
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
