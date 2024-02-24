@@ -18,9 +18,18 @@ public class User {
 
     private String encoderpassword;
     // Constructors
+
     public User() {
     }
 
+
+    public User(Integer id,String userid, String roles, String encoderpassword)
+    {
+        this.id =id;
+        this.userid = userid;
+        this.roles =roles;
+        this.encoderpassword = encoderpassword;
+    }
     // Getters and setters
 
 
