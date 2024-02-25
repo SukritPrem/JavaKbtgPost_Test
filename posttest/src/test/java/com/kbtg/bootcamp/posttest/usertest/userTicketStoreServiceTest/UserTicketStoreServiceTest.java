@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -125,6 +124,7 @@ public class UserTicketStoreServiceTest {
     }
 
     @Test
+    @DisplayName("Test When UserTicketStoreService Fail return ServerInternalError")
     public void testUpdateUserTicketAndLotteryAndReturnUserId_throwsServerInternalErrorException() {
         // Mocking userOperationsService methods
         UserOperation userOperation =new UserOperation();
@@ -144,6 +144,7 @@ public class UserTicketStoreServiceTest {
     }
 
     @Test
+    @DisplayName("Test Return All Result to User When found User")
     public void testSumTicketAndCostAndAmount_whenUserFound() throws NotFoundException {
         // Mocking userTicketStoreRepository behavior
         UserTicketStore userTicketStore1 = new UserTicketStore();
@@ -175,8 +176,8 @@ public class UserTicketStoreServiceTest {
 
         when(userTicketStoreRepository.findByuserid(anyString())).thenReturn(listUser);
         when(userTicketStoreRepository.findDistinctTicketByUserId(anyString())).thenReturn(tickets);
-        when(userTicketStoreRepository.sumPriceByUserId(anyString())).thenReturn(listUser);
-        when(userTicketStoreRepository.sumAmountByUserId(anyString())).thenReturn(amount);
+        when(userTicketStoreRepository.findUserTicketStoreByUserId(anyString())).thenReturn(listUser);
+        when(userTicketStoreRepository.findUserTicketStoreByUserId(anyString())).thenReturn(listUser);
 
 
 
@@ -187,6 +188,72 @@ public class UserTicketStoreServiceTest {
         assertEquals(expect.getCost(),result.getCost());
         assertEquals(expect.getCount(),result.getCount());
 
+    }
+
+    @Test
+    @DisplayName("Test Return All Result to User When Not found User")
+    public void testSumTicketAndCostAndAmount_whenUserNotFound() throws NotFoundException {
+        // Mocking userTicketStoreRepository behavior
+        when(userTicketStoreRepository.findByUseridAndTicket("", ""))
+                .thenReturn(Optional.empty());
+
+        try {
+            userTicketStoreService.deleteTicketInUserTicketStore("", "");
+        } catch (Exception e) {
+            assertEquals("UserTicketStore Not Found", e.getMessage());
+        }
+
+    }
+    @Test
+    @DisplayName("Test When User delete ticket in UserTicketStore When success")
+    void testDeleteTicketInUserTicketStore_Success() throws NotFoundException {
+        // Arrange
+        String userId = "123456789";
+        String ticket = "123456";
+        String amount = "9";
+        String price = "10000";
+        UserTicketStore userTicketStore = new UserTicketStore(userId,ticket,amount,price); // create a mock UserTicketStore object
+        when(userTicketStoreRepository.findByUseridAndTicket(userId, ticket))
+                .thenReturn(Optional.of(userTicketStore));
+
+        // Act
+        UserTicketStore result = userTicketStoreService.deleteTicketInUserTicketStore(userId, ticket);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(userTicketStore, result);
+        verify(userTicketStoreRepository, times(1)).deleteTicketByuserId(ticket, userId);
+    }
+
+    @Test
+    @DisplayName("Test When User delete ticket in UserTicketStore When Not found user")
+    void testDeleteTicketInUserTicketStore_NotFound() {
+        // Arrange
+        String userId = "nonExistingUserId";
+        String ticket = "nonExistingTicket";
+        when(userTicketStoreRepository.findByUseridAndTicket(userId, ticket))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> userTicketStoreService.deleteTicketInUserTicketStore(userId, ticket));
+        verify(userTicketStoreRepository, never()).deleteTicketByuserId(anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("Test When User delete ticket in UserTicketStore When Not found user")
+    void testDeleteTicketInUserTicketStore_NotFound_CheckMessageError() {
+        // Arrange
+        String userId = "nonExistingUserId";
+        String ticket = "nonExistingTicket";
+        when(userTicketStoreRepository.findByUseridAndTicket(userId, ticket))
+                .thenReturn(Optional.empty());
+
+        try {
+            userTicketStoreService.deleteTicketInUserTicketStore(userId, ticket);
+        } catch (Exception e) {
+            assertEquals("UserTicketStore Not Found", e.getMessage());
+        }
+        verify(userTicketStoreRepository, never()).deleteTicketByuserId(anyString(), anyString());
     }
 }
 

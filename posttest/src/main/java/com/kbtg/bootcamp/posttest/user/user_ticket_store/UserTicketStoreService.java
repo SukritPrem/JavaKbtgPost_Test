@@ -77,12 +77,12 @@ public class UserTicketStoreService {
         if(!user.isEmpty()) {
             return new ReturnResultAllToUser(
                     userTicketStoreRepository.findDistinctTicketByUserId(userid),
-                    userTicketStoreRepository.sumPriceByUserId(userid)
+                    userTicketStoreRepository.findUserTicketStoreByUserId(userid)
                             .stream()
                             .mapToInt(userLottery -> Integer.parseInt(userLottery.getAmount()) *
                                 Integer.parseInt(userLottery.getPrice()))
                             .sum(),
-                    userTicketStoreRepository.sumPriceByUserId(userid)
+                    userTicketStoreRepository.findUserTicketStoreByUserId(userid)
                             .stream()
                             .mapToInt(userLottery -> Integer.parseInt(userLottery.getAmount()))
                             .sum()
@@ -92,6 +92,7 @@ public class UserTicketStoreService {
             throw new NotFoundException("Not found User in UserTicketStoreService Layer");
     }
 
+    @Transactional
     public UserTicketStore deleteTicketInUserTicketStore(String userId, String ticket) throws NotFoundException
     {
         Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(userId, ticket);
@@ -100,10 +101,7 @@ public class UserTicketStoreService {
             userTicketStoreRepository.deleteTicketByuserId(ticket,userId);
             return userTicketStoreOptional.get();
         }
-        else
-            throw new NotFoundException("UserTicketStore Not Found");
+        throw new NotFoundException("UserTicketStore Not Found");
     }
-
-
 }
 

@@ -51,6 +51,6 @@ public interface UserTicketStoreRepository extends JpaRepository<UserTicketStore
     @Modifying
     @Transactional
     @Query(value = "SELECT * FROM user_ticket_store WHERE userId=:userId", nativeQuery = true)
-    List<UserTicketStore> sumPriceByUserId(@Param("userId") String userId);
+    List<UserTicketStore> findUserTicketStoreByUserId(@Param("userId") String userId);
 }
 

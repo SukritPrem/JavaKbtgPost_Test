@@ -16,7 +16,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,20 +45,9 @@ private UserService userService;
                 .build();
     }
 
-//    @Test
-//    @DisplayName("when perform on GET: /users/me should return Hello, Wallet!")
-//    void walletMessage() throws Exception {
-//        mockMvc.perform(get("/users/me"))
-//                .andExpect(jsonPath("$.message", is("Hello, Wallet!")))
-//                .andExpect(status().isOk());
-//    }
+
     @Test
-    @DisplayName("when perform on GET: /users/{userId}/lotteries should return " +
-            "{" +
-            "         ticket : [000001]" +
-                    " cost   : 199"+
-            "         count  : 1" +
-            "}")
+    @DisplayName("when perform on GET: /users/{userId}/lotteries should return All result")
     void TestUserGetAllLotteryExpectReturnStatusOK() throws Exception {
         String userId = "0123456789";
         List<String> resultAllticket = new ArrayList<>();
@@ -69,7 +59,7 @@ private UserService userService;
 
         mockMvc.perform(get("/users/{userId}/lotteries", userId))
                 .andExpect(jsonPath("$.tickets", hasSize(1)))
-                .andExpect(jsonPath("$.tickets", contains("000001")))
+                .andExpect(jsonPath("$.tickets[0]", is("000001")))
                 .andExpect(jsonPath("$.cost",is(199)))
                 .andExpect(jsonPath("$.count",is(1)))
                 .andExpect(status().isOk());
@@ -77,61 +67,47 @@ private UserService userService;
         verify(userService).allTotalTicket(userId);
     }
 
-    void TestUserGetAllLotteryExpectReturnStatusBad() throws Exception {
-        String userId = "0123456789";
-        List<String> resultAllticket = new ArrayList<>();
-        resultAllticket.add("000001");
-        Integer price = 199;
-        Integer amount = 1;
-        ReturnResultAllToUser result = new ReturnResultAllToUser(resultAllticket,price,amount);
-        when(userService.allTotalTicket(userId)).thenReturn(result);
+    @Test
+    @DisplayName("Test number character < 10 GET: /users/{userId}/lotteries")
+    void TestUserInvalidPathNumberCaseOne() throws Exception {
 
-        mockMvc.perform(get("/users/{userId}/lotteries", userId))
-                .andExpect(jsonPath("$.tickets", hasSize(1)))
-                .andExpect(jsonPath("$.tickets", contains("000001")))
-                .andExpect(jsonPath("$.cost",is(199)))
-                .andExpect(jsonPath("$.count",is(1)))
+        mockMvc.perform(get("/users/{userId}/lotteries", "123456789"))
                 .andExpect(status().isBadRequest());
-
-        verify(userService).allTotalTicket(userId);
     }
-//    @Test
-//    void savedUserHasRegistrationDate() {
-//        User user = new User();
-//        user.setRoles("USER");
-//        user.setEncoderpassword("09876543");
-//        user.setUserId("134567543");
-//
-//        userRepository.save(user);
-//        // Retrieve the saved user
-//        Optional<User> savedUserOptional = userRepository.findById(user.getId().longValue());
-//
-//        // Assert that the saved user exists
-//        assertTrue(savedUserOptional.isPresent(), "User should be saved");
-//
-//        // Get the saved user
-//        User savedUser = savedUserOptional.get();
-//
-//        // Assert that the saved user has a registration date
-//
+
+    @Test
+    @DisplayName("Test number character > 10 GET: /users/{userId}/lotteries")
+    void TestUserInvalidPathNumberCaseTwo() throws Exception {
+
+        mockMvc.perform(get("/users/{userId}/lotteries", "12345678901"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Test String character == 10 GET: /users/{userId}/lotteries")
+    void TestUserInvalidPathStringCaseOne() throws Exception {
+
+        mockMvc.perform(get("/users/{userId}/lotteries", "abcdefghij"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Test number character == 12345678.9 GET: /users/{userId}/lotteries")
+    void TestUserInvalidPathNumberCaseThree() throws Exception {
+
+        mockMvc.perform(get("/users/{userId}/lotteries", "12345678.9"))
+                .andExpect(status().isBadRequest());
+    }
+
+    //When GET user pattern regex for filter Path Variable in Error Path Variable another Controller.
+    //It's seem logic that I think another controller don't need to Test.
+    //Need check Return value.It's return follow requirement.
+
+//    @PostMapping("/{userId}/lotteries/{ticketId}")
+//    public Map<String, String> UserBuyTicket(@PathVariable @Pattern(regexp = "\\d{10}") String userId,
+//                                             @PathVariable @Pattern(regexp = "\\d{6}") String ticketId) throws NotFoundException {
+//        return Map.of(
+//                "id", Integer.toString(userService.userBuyTicket(userId, ticketId))
+//        );
 //    }
-//record  ReturnAllResultUserTicket(List<String> ticket, Integer price, Integer amount) {
-//
-//
-//}
-
-//    @Test
-//    @DisplayName("Test path /user/{userId}/lotteries/{ticketId} when user/00/lotteries/00")
-//    public void testAddShouldReturn200Request() throws Exception {
-//
-//
-//
-//        Mockito.when(patientRecordRepository.findAll()).thenReturn(records);
-//        mockMvc.perform(MockMvcRequestBuilders
-//                        .post("/users/0/lotteries/Hello")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//    }
-
-
 }

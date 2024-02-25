@@ -88,6 +88,7 @@ public class UserService {
         return userTicketStoreService.SumTicketAndCostAndAmount(userId);
     }
 
+    @Transactional
     public UserTicket deleteTicket(String userId,String ticket) throws NotFoundException {
 
         Optional<User> user = userRepository.findByuserid(userId);
