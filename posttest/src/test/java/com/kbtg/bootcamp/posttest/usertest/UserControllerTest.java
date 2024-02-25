@@ -67,7 +67,7 @@ private UserService userService;
     }
 
     @Test
-    @DisplayName("Test number character < 10 GET: /users/{userId}/lotteries")
+    @DisplayName("Test userid character < 10 GET: /users/{userId}/lotteries")
     void TestUserInvalidPathNumberCaseOne() throws Exception {
 
         mockMvc.perform(get("/users/{userId}/lotteries", "123456789"))
@@ -75,7 +75,7 @@ private UserService userService;
     }
 
     @Test
-    @DisplayName("Test number character > 10 GET: /users/{userId}/lotteries")
+    @DisplayName("Test userid character > 10 GET: /users/{userId}/lotteries")
     void TestUserInvalidPathNumberCaseTwo() throws Exception {
 
         mockMvc.perform(get("/users/{userId}/lotteries", "12345678901"))
@@ -91,6 +91,21 @@ private UserService userService;
     }
 
     @Test
+    @DisplayName("Test String character == 10 GET: /users/{userId}/lotteries")
+    void TestUserInvalidPathStringSpecialCase() throws Exception {
+
+        mockMvc.perform(get("/users/{userId}/lotteries", "$+-*!@$$$*"))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    @DisplayName("Test String character จจจจ == 10 GET: /users/{userId}/lotteries")
+    void TestUserInvalidPathStringSpecialCaseTwo() throws Exception {
+
+        mockMvc.perform(get("/users/{userId}/lotteries", "จจจจจจจจจจ"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("Test number character == 12345678.9 GET: /users/{userId}/lotteries")
     void TestUserInvalidPathNumberCaseThree() throws Exception {
 
@@ -99,9 +114,24 @@ private UserService userService;
     }
 
     //When GET user pattern regex for filter Path Variable in Error Path Variable another Controller.
-    //It's seem logic that I think another controller don't need to Test.
+    //It's seem logic that I think another controller don't need to more test.
     //Need check Return value.It's return follow requirement.
 
+    @Test
+    @DisplayName("Test number character == 12345678.9 POST /users/{userId}/lotteries/{ticketId}")
+    void TestPostUserInvalidPathNumberCaseThree() throws Exception {
+
+        mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "12345678.9","จจจจจจ"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Test number character == 12345678.9 POST /users/{userId}/lotteries/{ticketId}")
+    void TestPostUserSuccess() throws Exception {
+
+        mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567890","123456"))
+                .andExpect(status().isOk());
+    }
     @Test
     @DisplayName("POST /users/{userId}/lotteries/{ticketId}")
     void TestWhenUserBuyTicket_Success() throws Exception {

@@ -1,5 +1,6 @@
 package com.kbtg.bootcamp.posttest.lotterytest;
 
+import com.kbtg.bootcamp.posttest.exception.ServerInternalErrorException;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRequest;
@@ -9,6 +10,7 @@ import com.kbtg.bootcamp.posttest.user.UserRepository;
 import com.kbtg.bootcamp.posttest.user.UserService;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,6 +47,7 @@ public class LotteryServiceTest {
     @Mock
     private UserTicketStoreService userTicketStoreService;
     @Test
+    @DisplayName("Get All Lottery")
     public void testGetAllLottery() {
 
         LotteryService lotteryService1 = new LotteryService(lotteryRepository,userService,userRepository,userTicketStoreService);
@@ -66,6 +68,19 @@ public class LotteryServiceTest {
             System.out.println(ticket);
         }
         assertEquals(expectedTickets, result);
+    }
+
+    @Test
+    @DisplayName("Test Get All Lottery Not found")
+    public void GetAllLotteryNotFound()
+    {
+        // Call the method under test
+        Exception exception = assertThrows(ServerInternalErrorException.class, () -> {
+            lotteryService.getAll_lottery();
+        });
+
+        // Verify that the correct exception is thrown
+        assertEquals("Lottery Not Found", exception.getMessage());
     }
 
     @Test
@@ -94,6 +109,9 @@ public class LotteryServiceTest {
         verify(userRepository).findByroles("ADMIN"); // Verify that userRepository.findByroles() was called
         verify(lotteryRepository).findByTicket("123456"); // Verify that lotteryRepository.findByTicket() was called
     }
+
+
+
 
 
 }

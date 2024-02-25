@@ -183,4 +183,26 @@ public class LotteryRequestTest {
         );
     }
 
+    @Test
+    @DisplayName("Test admin set All null")
+    public void testInvalidLotteryRequestAllNull() {
+        // Create an invalid LotteryRequest with negative values
+        LotteryRequest lotteryRequest = new LotteryRequest();
+        lotteryRequest.setTicket(null); // Not 6 characters long
+        lotteryRequest.setPrice(null);  // Negative price
+        lotteryRequest.setAmount(null); // Negative amount
+
+        // Validate the LotteryRequest
+        Set<ConstraintViolation<LotteryRequest>> violations = validator.validate(lotteryRequest);
+
+        // Assert that there are violations
+        assertThat(violations).hasSize(3);
+
+        // Assert individual violations
+        assertThat(violations).extracting("message").containsExactlyInAnyOrder(
+                "Ticket must not be null",
+                "Price must not be null",
+                "amount must not be null"
+        );
+    }
 }

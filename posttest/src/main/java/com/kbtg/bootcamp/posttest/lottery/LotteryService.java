@@ -36,13 +36,11 @@ public class LotteryService {
 
     public List<String> getAll_lottery() {
         List<Lottery> lotteryList = lotteryRepository.findAll();
-        return lotteryList.stream()
-                .filter(lottery -> {
-                    int amount = Integer.parseInt(lottery.getAmount());
-                    return amount > 0;
-                })
-                .map(Lottery::getTicket)
-                .collect(Collectors.toList());
+        if(lotteryList.isEmpty())
+            throw new ServerInternalErrorException("Lottery Not Found");
+        else
+            return listStringTicket(lotteryList);
+
     }
 
     public UserTicket createNewLotteryByAdmin(LotteryRequest lotteryRequest) throws ServerInternalErrorException {
@@ -94,6 +92,17 @@ public class LotteryService {
                 lottery.getPrice(),
                 lottery.getTicket()
         );
+    }
+
+    private List<String> listStringTicket(List<Lottery> lotteryList)
+    {
+        return lotteryList.stream()
+                .filter(lottery -> {
+                    int amount = Integer.parseInt(lottery.getAmount());
+                    return amount > 0;
+                })
+                .map(Lottery::getTicket)
+                .collect(Collectors.toList());
     }
 //    public UserTicket CreateNewLotteryAndReturnUserticket(LotteryRepository lotteryRepository,
 //                                                          UserService userService,
