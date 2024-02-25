@@ -18,9 +18,9 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -103,11 +103,15 @@ private UserService userService;
     //It's seem logic that I think another controller don't need to Test.
     //Need check Return value.It's return follow requirement.
 
-//    @PostMapping("/{userId}/lotteries/{ticketId}")
-//    public Map<String, String> UserBuyTicket(@PathVariable @Pattern(regexp = "\\d{10}") String userId,
-//                                             @PathVariable @Pattern(regexp = "\\d{6}") String ticketId) throws NotFoundException {
-//        return Map.of(
-//                "id", Integer.toString(userService.userBuyTicket(userId, ticketId))
-//        );
-//    }
+    @Test
+    @DisplayName("POST /users/{userId}/lotteries/{ticketId}")
+    void TestWhenUserBuyTicket_Success() throws Exception {
+
+        doReturn(1).when(userService).userBuyTicket(anyString(),anyString());
+
+        mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567890","123456"))
+                .andExpect(jsonPath("$.id", is("1")))
+                .andExpect(status().isOk());
+    }
+
 }
