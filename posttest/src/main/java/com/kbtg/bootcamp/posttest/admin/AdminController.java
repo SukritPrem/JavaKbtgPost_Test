@@ -1,6 +1,5 @@
 package com.kbtg.bootcamp.posttest.admin;
 
-import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRequest;
 import com.kbtg.bootcamp.posttest.lottery.LotteryService;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
@@ -20,13 +19,13 @@ public class AdminController {
     private final LotteryService lotteryService;
 
 
-    AdminController(LotteryService lotteryService){
+    public AdminController(LotteryService lotteryService){
         this.lotteryService = lotteryService;
     }
 
     @Transactional
     @PostMapping("/lotteries")
-    public Map<String, String> createLottery(@Valid @RequestBody LotteryRequest lotteryRequest) throws NotFoundException {
+    public Map<String, String> createLottery(@Valid @RequestBody LotteryRequest lotteryRequest){
         UserTicket userTicket = lotteryService.createNewLotteryByAdmin(lotteryRequest);
         return Map.of("ticket",  userTicket.getTicket());
     }

@@ -2,7 +2,6 @@ package com.kbtg.bootcamp.posttest.usertest;
 
 import com.kbtg.bootcamp.posttest.user.ReturnResultAllToUser;
 import com.kbtg.bootcamp.posttest.user.UserController;
-import com.kbtg.bootcamp.posttest.user.UserRepository;
 import com.kbtg.bootcamp.posttest.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +30,7 @@ public class UserControllerTest {
     MockMvc mockMvc;
 
 
-    @Mock
-    private UserRepository userRepository;
+
 
 @Mock
 private UserService userService;

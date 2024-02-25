@@ -32,3 +32,4 @@ public class LotteryController {
         return data;
     }
 }
+

@@ -84,6 +84,7 @@ public class LotteryServiceTest {
     }
 
     @Test
+    @DisplayName("Create New Lottery By Admin test all method is correctly work in service.")
     public void testCreateNewLotteryByAdmin() {
         LotteryRequest lotteryRequest = new LotteryRequest("123456", 100, 10);
         User adminUser = new User(1,"1234567890","ADMIN","123454321234"); // Assuming admin user is present
