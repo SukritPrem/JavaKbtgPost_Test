@@ -19,8 +19,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -111,6 +110,14 @@ private UserService userService;
 
         mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567890","123456"))
                 .andExpect(jsonPath("$.id", is("1")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("DELETE /users/{userId}/lotteries/{ticketId}")
+    void TestWhenUserDeleteTicket_NotFoundUser() throws Exception {
+        doReturn("123456").when(userService).deleteTicket(anyString(),anyString());
+        mockMvc.perform(delete("/users/{userId}/lotteries/{ticketId}", "1234567890","123456"))
                 .andExpect(status().isOk());
     }
 

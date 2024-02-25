@@ -45,6 +45,8 @@ public class UserServiceTest {
     private UserService userService;
 
     @Test
+    @DisplayName("CheckUserAndLottery"
+                + "When User and Lottery Found Success")
     void testCheckUserAndLottery() throws NotFoundException, Status200Exception {
         // Mock user and lottery data
         User user = new User(1,"1234567890","USER","123454321234"); // Assuming admin user is present
@@ -63,8 +65,12 @@ public class UserServiceTest {
         verify(lotteryRepository).findByTicket("123");
     }
 
+    //It's less some case because logic Operation follow By Worker UserTicketStoreService
+
     @Test
-    public void testUserBuyTicketWhenActionIsBuy() throws NotFoundException {
+    @DisplayName("CheckUserAndLottery"
+            + "When UserOperation Return Buy Status")
+    public void testUserBuyTicketWhenActionIsBuy() throws NotFoundException, Status200Exception {
         // Arrange
         SpyUserServiceTest spyUserServiceTest = new SpyUserServiceTest(userRepository,lotteryRepository,userTicketRepository,userTicketStoreService);
 
@@ -94,7 +100,73 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("When User delete Ticket success")
+    @DisplayName("CheckUserAndLottery"
+            + "When not found user")
+    public void testUserBuyTicketWhenUserNotFound()
+    {
+        Lottery lottery = new Lottery("132","32414","0");
+        when(userRepository.findByuserid(anyString())).thenReturn(Optional.empty());
+        when(lotteryRepository.findByTicket(anyString())).thenReturn(Optional.of(lottery));
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            userService.userBuyTicket("user_id", "ticket_id");
+        });
+
+        assertEquals("Error user id or lottery not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("CheckUserAndLottery"
+            + "When not found lotter")
+    public void testUserBuyTicketWhenLotteryNotFound()
+    {
+        User user = new User(1,"123456789","1324","42314");
+//        Lottery lottery = new Lottery("132","32414","0");
+        when(userRepository.findByuserid(anyString())).thenReturn(Optional.of(user));
+        when(lotteryRepository.findByTicket(anyString())).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            userService.userBuyTicket("user_id", "ticket_id");
+        });
+
+        assertEquals("Error user id or lottery not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName( "lottery.checkAmounteqaulZero()" +
+           "When lottery Sold out"
+    )
+    public void testUserBuyTicketWhenLotteryAmountZero()
+    {
+        User user = new User(1,"123456789","1324","42314");
+        Lottery lottery = new Lottery("132","32414","0");
+        when(userRepository.findByuserid(anyString())).thenReturn(Optional.of(user));
+        when(lotteryRepository.findByTicket(anyString())).thenReturn(Optional.of(lottery));
+
+        Status200Exception exception = assertThrows(Status200Exception.class, () -> {
+            userService.userBuyTicket("user_id", "ticket_id");
+        });
+
+        assertEquals("Sorry Lottery Sold out.", exception.getMessage());
+    }
+    @Test
+    @DisplayName("CheckUserAndLottery"
+            + "When UserOperation Return Buy Status")
+    public void testUserBuyTicketWhenLotterySoldOut()
+    {
+        when(userRepository.findByuserid(anyString())).thenReturn(Optional.empty());
+        when(lotteryRepository.findByTicket(anyString())).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            userService.userBuyTicket("user_id", "ticket_id");
+        });
+
+        assertEquals("Error user id or lottery not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("deleteTicket" +
+            "When User delete Ticket success")
     void deleteTicket_Success() throws NotFoundException {
 
         User user = new User(1,"12345689","USER","23432134321234");
@@ -112,14 +184,15 @@ public class UserServiceTest {
         doReturn(userTicketStore).when(userTicketStoreService).deleteTicketInUserTicketStore(any(),any());
         when(userTicketRepository.save(any())).thenReturn(expected);
 
-        UserTicket userTicket = userService.deleteTicket(user.getUserId(),"123456");
+        String result = userService.deleteTicket(user.getUserId(),"123456");
 
-        assertEquals(expected, userTicket);
+        assertEquals(expected.getTicket(), result);
 
     }
 
     @Test
-    @DisplayName("When User Not found")
+    @DisplayName("deleteTicket"+
+            "When User Not found")
     void deleteTicket_UserNotFound() throws NotFoundException {
         // Arrange
         when(userRepository.findByuserid("userId"))
@@ -190,10 +263,9 @@ class SpyUserServiceTest extends UserService
     };
 
     @Override
-    public Integer userBuyTicket(String userid, String ticket) throws NotFoundException {
+    public Integer userBuyTicket(String userid, String ticket) throws NotFoundException, Status200Exception {
         return super.userBuyTicket(userid,ticket);
     };
-
 
 }
 

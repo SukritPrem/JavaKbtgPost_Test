@@ -1,7 +1,7 @@
 package com.kbtg.bootcamp.posttest.user;
 
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
-import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
+import com.kbtg.bootcamp.posttest.exception.Status200Exception;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class UserController {
     @ResponseBody
     @PostMapping("/{userId}/lotteries/{ticketId}")
     public  Map<String, String>  UserBuyTicket(@PathVariable  @Pattern(regexp = "\\d{10}") String userId,
-                                            @PathVariable @Pattern(regexp = "\\d{6}") String ticketId) throws NotFoundException{
+                                            @PathVariable @Pattern(regexp = "\\d{6}") String ticketId) throws NotFoundException, Status200Exception {
             return Map.of(
                     "id", Integer.toString(userService.userBuyTicket(userId, ticketId))
             );
@@ -43,18 +43,11 @@ public class UserController {
     @DeleteMapping("/{userId}/lotteries/{ticketId}")
     public Map<String, String> UserDeleteTicket(@PathVariable  @Pattern(regexp = "\\d{10}") String userId,
                                               @PathVariable  @Pattern(regexp = "\\d{6}") String ticketId) throws NotFoundException {
-        UserTicket userTicket = userService.deleteTicket(userId, ticketId);
         return Map.of(
-                "ticket", userTicket.getTicket()
+                "ticket", userService.deleteTicket(userId, ticketId)
         );
     }
 
-    @GetMapping("/me")
-    Message me() {
-        return new Message("Hello, Wallet!");
-    }
 
-    record Message(String message) {
-    }
 }
 

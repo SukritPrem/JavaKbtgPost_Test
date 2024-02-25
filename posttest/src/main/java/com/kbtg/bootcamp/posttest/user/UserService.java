@@ -53,8 +53,8 @@ public class UserService {
 
 
     @Transactional
-    public Integer userBuyTicket(String userId, String ticketId) throws NotFoundException {
-        try {
+    public Integer userBuyTicket(String userId, String ticketId) throws NotFoundException, Status200Exception {
+
             UserOperation userOperation = checkUserAndLottery(userId, ticketId);
             userOperation = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperation);
             if (userOperation.getAction().equals("BUY")) {
@@ -64,7 +64,8 @@ public class UserService {
                         userOperation.getUser(),
                         userOperation.getLottery()
                 ).getId();
-            } else if (userOperation.getAction().equals("BUY AND UPDATE")) {
+            }
+            else if (userOperation.getAction().equals("BUY AND UPDATE")) {
                 saveUserActionReturnUserTicket(
                         "BUY",
                         userOperation.getLottery().getAmount(),
@@ -77,25 +78,22 @@ public class UserService {
                         userOperation.getUser(),
                         userOperation.getLottery()
                 ).getId();
-            } else
+            }
+            else
                 throw new ServerInternalErrorException("Error User Buy Ticket");
-        } catch (ServerInternalErrorException | Status200Exception e){
-            throw new ServerInternalErrorException("Error User Buy Ticket");
-        }
     }
 
     public  ReturnResultAllToUser  allTotalTicket(String userId) throws NotFoundException {
-        return userTicketStoreService.SumTicketAndCostAndAmount(userId);
+        return userTicketStoreService.sumTicketAndCostAndAmount(userId);
     }
 
     @Transactional
-    public UserTicket deleteTicket(String userId,String ticket) throws NotFoundException {
+    public String deleteTicket(String userId,String ticket) throws NotFoundException {
 
         Optional<User> user = userRepository.findByuserid(userId);
         if(user.isEmpty())
             throw new NotFoundException("Ticket not found or User not found");
         UserTicketStore userTicketStore = userTicketStoreService.deleteTicketInUserTicketStore(userId,ticket);
-
         return  userTicketRepository.save(
                 new UserTicket(
                     userTicketStore.getUserid(),
@@ -105,7 +103,7 @@ public class UserService {
                     userTicketStore.getAmount(),
                     userTicketStore.getPrice()
                 )
-        );
+        ).getTicket();
     }
 
     // Define a method to save user action

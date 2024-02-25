@@ -81,7 +81,7 @@ public class LotteryService {
                     user.get(),
                     newLottery
             );
-        } catch (Exception e) {
+        } catch (ServerInternalErrorException e) {
             throw new ServerInternalErrorException("Error in Create NewLottery By admin");
         }
     }

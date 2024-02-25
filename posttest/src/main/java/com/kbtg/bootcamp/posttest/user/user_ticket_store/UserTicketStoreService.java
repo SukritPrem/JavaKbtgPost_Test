@@ -74,7 +74,7 @@ public class UserTicketStoreService {
         }
     }
 
-    public ReturnResultAllToUser SumTicketAndCostAndAmount(String userid) throws NotFoundException {
+    public ReturnResultAllToUser sumTicketAndCostAndAmount(String userid) throws NotFoundException {
         List<UserTicketStore> user = userTicketStoreRepository.findByuserid(userid);
         if(!user.isEmpty()) {
             return new ReturnResultAllToUser(
@@ -94,7 +94,7 @@ public class UserTicketStoreService {
             throw new NotFoundException("Not found User in UserTicketStoreService Layer");
     }
 
-    @Transactional
+
     public UserTicketStore deleteTicketInUserTicketStore(String userId, String ticket) throws NotFoundException
     {
         Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(userId, ticket);
