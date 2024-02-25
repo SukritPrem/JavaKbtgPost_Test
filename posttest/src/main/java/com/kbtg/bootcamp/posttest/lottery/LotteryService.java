@@ -48,11 +48,7 @@ public class LotteryService {
     public UserTicket createNewLotteryByAdmin(LotteryRequest lotteryRequest) throws ServerInternalErrorException {
         try {
             Optional<Lottery> lotteryOptional = lotteryRepository.findByTicket(lotteryRequest.getTicket());
-            Lottery newLottery = new Lottery(
-                    Integer.toString(lotteryRequest.getPrice()),
-                    lotteryRequest.getTicket(),
-                    Integer.toString(lotteryRequest.getAmount())
-            );
+            Lottery newLottery = createLotteryByLotteryRequest(lotteryRequest);
             //assume admin have 1 person
             Optional<User> user = userRepository.findByroles("ADMIN");
 
@@ -66,13 +62,14 @@ public class LotteryService {
                     lottery.setPrice(newLottery.getPrice());
                 //update lottery
                 //update to table lottery
-                String totalAmountString = Integer.toString(Integer.parseInt(lottery.getAmount()) + Integer.parseInt(newLottery.getAmount()));
-                lotteryRepository.updateAmountAndPriceByticket(
-                        totalAmountString,
-                        lottery.getPrice(),
-                        lottery.getTicket()
-                );
-                //update when lottery price changed in userTicketStore
+                updateLotteryAmount(lottery,newLottery);
+//                String totalAmountString = Integer.toString(Integer.parseInt(lottery.getAmount()) + Integer.parseInt(newLottery.getAmount()));
+//                lotteryRepository.updateAmountAndPriceByticket(
+//                        totalAmountString,
+//                        lottery.getPrice(),
+//                        lottery.getTicket()
+//                );
+                //update when lottery price changed in userTicketStore changed too.
                 userTicketStoreService.checkIfPriceLotteryChangeUpdate(lottery.getTicket(),lottery.getPrice());
             }
             return userService.saveUserActionReturnUserTicket(
@@ -86,6 +83,24 @@ public class LotteryService {
         }
     }
 
+    private Lottery createLotteryByLotteryRequest(LotteryRequest lotteryRequest)
+    {
+        return new Lottery(
+                Integer.toString(lotteryRequest.getPrice()),
+                lotteryRequest.getTicket(),
+                Integer.toString(lotteryRequest.getAmount())
+        );
+    }
+
+    private void updateLotteryAmount(Lottery lottery,Lottery newLottery)
+    {
+        String totalAmountString = Integer.toString(Integer.parseInt(lottery.getAmount()) + Integer.parseInt(newLottery.getAmount()));
+        lotteryRepository.updateAmountAndPriceByticket(
+                totalAmountString,
+                lottery.getPrice(),
+                lottery.getTicket()
+        );
+    }
 //    public UserTicket CreateNewLotteryAndReturnUserticket(LotteryRepository lotteryRepository,
 //                                                          UserService userService,
 //                                                          Lottery newLottery,
