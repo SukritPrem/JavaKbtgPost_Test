@@ -5,6 +5,7 @@ import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.UserRepository;
 import com.kbtg.bootcamp.posttest.user.UserService;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
+import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,13 +21,16 @@ public class LotteryService {
 
     private UserService userService;
 
+    private UserTicketStoreService userTicketStoreService;
 
     public LotteryService(LotteryRepository lotteryRepository,
                           UserService userService,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          UserTicketStoreService userTicketStoreService) {
         this.lotteryRepository = lotteryRepository;
         this.userService = userService;
         //for find admin
+        this.userTicketStoreService = userTicketStoreService;
         this.userRepository = userRepository;
     }
 
@@ -57,7 +61,9 @@ public class LotteryService {
             else {
                 //old lottery
                 Lottery lottery = lotteryOptional.get();
-
+                //update price
+                if(!newLottery.getPrice().equals(lottery.getPrice()))
+                    lottery.setPrice(newLottery.getPrice());
                 //update lottery
                 //update to table lottery
                 String totalAmountString = Integer.toString(Integer.parseInt(lottery.getAmount()) + Integer.parseInt(newLottery.getAmount()));
@@ -66,6 +72,8 @@ public class LotteryService {
                         lottery.getPrice(),
                         lottery.getTicket()
                 );
+                //update when lottery price changed in userTicketStore
+                userTicketStoreService.checkIfPriceLotteryChangeUpdate(lottery.getTicket(),lottery.getPrice());
             }
             return userService.saveUserActionReturnUserTicket(
                     "ADD",

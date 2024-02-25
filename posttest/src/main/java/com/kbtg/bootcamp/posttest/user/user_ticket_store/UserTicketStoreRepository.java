@@ -32,8 +32,14 @@ public interface UserTicketStoreRepository extends JpaRepository<UserTicketStore
     void updateAmountByuserIdAndTicket(@Param("amount") String amount, @Param("userid") String userid,
                                        @Param("ticket") String ticket);
 
+    @Modifying
+    @Transactional
+    @Query(value ="UPDATE user_ticket_store SET price =:price WHERE ticket=:ticket", nativeQuery = true)
+    void updatePriceByTicket(@Param("price") String price, @Param("ticket") String ticket);
+
     List<UserTicketStore> findByuserid(String userid);
 
+    Optional<UserTicketStore> findByticket(String ticket);
 
     //    DELETE FROM user_ticket WHERE ticket='000001' AND userid = '0123456789';
     @Modifying
@@ -41,7 +47,8 @@ public interface UserTicketStoreRepository extends JpaRepository<UserTicketStore
     @Query(value ="DELETE FROM user_ticket_store WHERE ticket=:ticket AND userid =:userid", nativeQuery = true)
     void deleteTicketByuserId(@Param("ticket") String ticket,@Param("userid") String userid);
 
-    @Modifying@Transactional
+    @Modifying
+    @Transactional
     @Query(value = "SELECT DISTINCT ticket FROM user_ticket_store WHERE userId=:userId",nativeQuery = true)
     List<String> findDistinctTicketByUserId(@Param("userId") String userId);
     @Modifying

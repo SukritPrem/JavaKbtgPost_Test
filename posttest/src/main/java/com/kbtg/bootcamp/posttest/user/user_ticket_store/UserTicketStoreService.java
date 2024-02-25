@@ -58,11 +58,13 @@ public class UserTicketStoreService {
                 lotteryRepository.updateAmountZeroByticket(userOperation.getLottery().getTicket());
                 //Re value Amount In user ticketStore when use buy new one
                 userOperation.setAmountInUseTicketStore();
+                userOperation.setPriceInUserTicketStore();
                 //Update userTicketStore
                 userTicketStoreRepository.updateAmountByuserIdAndTicket(
                         userOperation.getUserTicketStore().getAmount(),
                         userOperation.getUser().getUserId(),
                         userOperation.getUserTicketStore().getTicket());
+
                 userOperation.setAction("BUY AND UPDATE");
                 return userOperation;
             }
@@ -102,6 +104,16 @@ public class UserTicketStoreService {
             return userTicketStoreOptional.get();
         }
         throw new NotFoundException("UserTicketStore Not Found");
+    }
+
+    public void checkIfPriceLotteryChangeUpdate(String ticket,String price)
+    {
+        Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByticket(ticket);
+        if(userTicketStoreOptional.isPresent())
+        {
+            if(!userTicketStoreOptional.get().getPrice().equals(price))
+                userTicketStoreRepository.updatePriceByTicket(price,ticket);
+        }
     }
 }
 

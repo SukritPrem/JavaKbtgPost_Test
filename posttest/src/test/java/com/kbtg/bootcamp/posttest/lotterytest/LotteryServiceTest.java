@@ -8,6 +8,7 @@ import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.UserRepository;
 import com.kbtg.bootcamp.posttest.user.UserService;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
+import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,10 +43,12 @@ public class LotteryServiceTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private UserTicketStoreService userTicketStoreService;
     @Test
     public void testGetAllLottery() {
 
-        LotteryService lotteryService1 = new LotteryService(lotteryRepository,userService,userRepository);
+        LotteryService lotteryService1 = new LotteryService(lotteryRepository,userService,userRepository,userTicketStoreService);
         // Prepare test data
         List<Lottery> mockLotteryList = new ArrayList<>();
         mockLotteryList.add(new Lottery("1", "ticket1", "100"));

@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS user_lottery CASCADE;
 
 CREATE TABLE lottery (
       id SERIAL PRIMARY KEY,
-      price VARCHAR(255) NOT NULL,
+      price VARCHAR(255) ,
       amount VARCHAR(255) NOT NULL,
       ticket VARCHAR(255) UNIQUE NOT NULL
 );

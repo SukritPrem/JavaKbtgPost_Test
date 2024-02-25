@@ -24,6 +24,13 @@ public class UserOperation {
                     Integer.parseInt(userTicketStore.getAmount()
                     )));
     }
+
+    public void setPriceInUserTicketStore()
+    {
+        userTicketStore.setPrice(Integer.toString(
+                Integer.parseInt(lottery.getPrice())
+        ));
+    }
     public void setUser(User user) {
         this.user = user;
     }
