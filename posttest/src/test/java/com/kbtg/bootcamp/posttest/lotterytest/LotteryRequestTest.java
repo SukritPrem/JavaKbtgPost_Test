@@ -160,4 +160,27 @@ public class LotteryRequestTest {
         );
     }
 
+    @Test
+    @DisplayName("Test admin set All value is Zero")
+    public void testInvalidLotteryRequestAllZero() {
+        // Create an invalid LotteryRequest with negative values
+        LotteryRequest lotteryRequest = new LotteryRequest();
+        lotteryRequest.setTicket("123456"); // Not 6 characters long
+        lotteryRequest.setPrice(0);  // Negative price
+        lotteryRequest.setAmount(0); // Negative amount
+
+        // Validate the LotteryRequest
+        Set<ConstraintViolation<LotteryRequest>> violations = validator.validate(lotteryRequest);
+
+        // Assert that there are violations
+        assertThat(violations).hasSize(3);
+
+        // Assert individual violations
+        assertThat(violations).extracting("message").containsExactlyInAnyOrder(
+                "Price must not exceed the min allowed value Min:10",
+                "Price must be positive",
+                "amount must be positive"
+        );
+    }
+
 }

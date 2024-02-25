@@ -62,13 +62,7 @@ public class LotteryService {
                     lottery.setPrice(newLottery.getPrice());
                 //update lottery
                 //update to table lottery
-                updateLotteryAmount(lottery,newLottery);
-//                String totalAmountString = Integer.toString(Integer.parseInt(lottery.getAmount()) + Integer.parseInt(newLottery.getAmount()));
-//                lotteryRepository.updateAmountAndPriceByticket(
-//                        totalAmountString,
-//                        lottery.getPrice(),
-//                        lottery.getTicket()
-//                );
+                updateLottery(lottery,newLottery);
                 //update when lottery price changed in userTicketStore changed too.
                 userTicketStoreService.checkIfPriceLotteryChangeUpdate(lottery.getTicket(),lottery.getPrice());
             }
@@ -92,7 +86,7 @@ public class LotteryService {
         );
     }
 
-    private void updateLotteryAmount(Lottery lottery,Lottery newLottery)
+    private void updateLottery(Lottery lottery,Lottery newLottery)
     {
         String totalAmountString = Integer.toString(Integer.parseInt(lottery.getAmount()) + Integer.parseInt(newLottery.getAmount()));
         lotteryRepository.updateAmountAndPriceByticket(

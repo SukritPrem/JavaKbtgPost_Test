@@ -17,20 +17,18 @@ public class UserOperation {
     public User getUser() {
         return user;
     }
-    public void setAmountInUseTicketStore()
+    public void setAmountAndPriceInUseTicketStore()
     {
         userTicketStore.setAmount(Integer.toString(
                     Integer.parseInt(lottery.getAmount()) +
                     Integer.parseInt(userTicketStore.getAmount()
                     )));
-    }
 
-    public void setPriceInUserTicketStore()
-    {
         userTicketStore.setPrice(Integer.toString(
                 Integer.parseInt(lottery.getPrice())
         ));
     }
+
     public void setUser(User user) {
         this.user = user;
     }
