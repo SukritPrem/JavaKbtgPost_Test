@@ -1,5 +1,6 @@
 package com.kbtg.bootcamp.posttest.lottery;
 
+import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.exception.ServerInternalErrorException;
 import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.UserRepository;
@@ -34,10 +35,10 @@ public class LotteryService {
         this.userRepository = userRepository;
     }
 
-    public List<String> getAll_lottery() {
+    public List<String> getAll_lottery() throws NotFoundException {
         List<Lottery> lotteryList = lotteryRepository.findAll();
         if(lotteryList.isEmpty())
-            throw new ServerInternalErrorException("Lottery Not Found");
+            throw new NotFoundException("Lottery Not Found");
         else
             return listStringTicket(lotteryList);
 

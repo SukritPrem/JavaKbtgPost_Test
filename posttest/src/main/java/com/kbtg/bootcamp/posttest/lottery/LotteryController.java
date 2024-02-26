@@ -1,5 +1,6 @@
 package com.kbtg.bootcamp.posttest.lottery;
 
+import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +27,7 @@ public class LotteryController {
 
     @GetMapping("")
     @ResponseBody
-    public Map<String, List<String>> getData() {
+    public Map<String, List<String>> getData() throws NotFoundException {
         Map<String, List<String>> data = new HashMap<>();
         data.put("ticket", lotteryService.getAll_lottery());
         return data;

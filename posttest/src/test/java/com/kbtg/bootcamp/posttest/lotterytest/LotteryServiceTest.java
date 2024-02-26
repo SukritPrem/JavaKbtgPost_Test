@@ -1,5 +1,6 @@
 package com.kbtg.bootcamp.posttest.lotterytest;
 
+import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.exception.ServerInternalErrorException;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
@@ -48,7 +49,7 @@ public class LotteryServiceTest {
     private UserTicketStoreService userTicketStoreService;
     @Test
     @DisplayName("Get All Lottery")
-    public void testGetAllLottery() {
+    public void testGetAllLottery() throws NotFoundException {
 
         LotteryService lotteryService1 = new LotteryService(lotteryRepository,userService,userRepository,userTicketStoreService);
         // Prepare test data

@@ -1,123 +1,20 @@
-#services:
-#  postgres:
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_DB: user_ticket
-#      POSTGRES_USER: user
-#      POSTGRES_PASSWORD: password
-#    volumes:
-#      # - pgdata:/var/lib/postgresql/data
-#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-#    ports:
-#      - "5432:5432"
-
-#services:
-#  postgres:
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_DB: user_ticket
-#      POSTGRES_USER: user
-#      POSTGRES_PASSWORD: password
-#    volumes:
-#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-#    ports:
-#      - "5432:5432"
-#  spring:
-#      build:
-#        context: .
-#        dockerfile: Dockerfile
-#      image: testapp
-#      depends_on:
-#        - postgres
-#
-
-#  my_spring_boot_app:
-#    image: test_javaapp
-#    ports:
-#      - "8081:8081"  # Map container port 8081 to host port 8081
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/user_ticket
-#      SPRING_DATASOURCE_USERNAME: user
-#      SPRING_DATASOURCE_PASSWORD: password
-#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-#      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
-
-#services:
-#  postgres:
-#    image: postgres
-#    restart: unless-stopped
-#    environment:
-#      - POSTGRES_USER=user
-#      - POSTGRES_PASSWORD=password
-#      - POSTGRES_DB=jdbc:postgresql://localhost:5432/user_ticket
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - db:/var/lib/postgres
-#  app:
-#    depends_on:
-#      - postgresdb
-#    build: .
-#    restart: on-failure
-#    ports:
-#      - "8081:8081"
-#    volumes:
-#      - .m2:/root/.m2
-#    stdin_open: true
-#    tty: true
-#
-#volumes:
-#  db:
-
-#services:
-#  postgres:
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_DB: user_ticket
-#      POSTGRES_USER: user
-#      POSTGRES_PASSWORD: password
-#    volumes:
-#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-#    ports:
-#      - "5432:5432"
-#  app:
-#    depends_on:
-#      - postgres
-#    build: .
-#
-#services:
-#  postgres:
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_DB: user_ticket
-#      POSTGRES_USER: user
-#      POSTGRES_PASSWORD: password
-#    volumes:
-#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-#    ports:
-#      - '5432:5432'
-#
-#  app:
-#    depends_on:
-#      - postgres
-#    build: .
 version: '2'
 
 services:
-#  app:
-#    image: 'docker-spring-boot'
-#    build:
-#      context: .
-#    container_name: app
-#    ports:
-#      - 8888:8081
-#    depends_on:
-#      - db
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/user_ticket
-#      - SPRING_DATASOURCE_USERNAME=user
-#      - SPRING_DATASOURCE_PASSWORD=password
-#      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  app:
+    image: 'docker-spring-boot'
+    build:
+      context: .
+    container_name: app
+    ports:
+      - 8888:8888
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/user_ticket
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
   db:
     image: 'postgres:latest'

@@ -37,7 +37,7 @@ public class LotteryControllerTest {
 
     @Test
     @DisplayName("Test Get Data From LotteryRepository")
-    public void testGetData() throws Exception {
+    public void testGetLottery() throws Exception {
         List<String> mockLotteryData = Arrays.asList("ticket1", "ticket2", "ticket3");
         Map<String, List<String>> mockData = new HashMap<>();
         mockData.put("ticket", mockLotteryData);
@@ -52,24 +52,4 @@ public class LotteryControllerTest {
                 .andExpect(jsonPath("$.ticket[2]", is("ticket3"))); // Ensure the third element is "ticket3"
     }
 
-
-
-//    @Test
-//    public void testCreateLottery() throws Exception {
-//        // Prepare a mock LotteryRequest
-//        LotteryRequest lotteryRequest = new LotteryRequest(/* Provide necessary arguments */);
-//
-//        // Mocking the behavior of the lotteryService
-//        when(lotteryService.createNewLotteryByAdmin(any(LotteryRequest.class))).thenReturn(/* Mock the expected return value */);
-//
-//        // Perform the POST request
-//        mockMvc.perform(MockMvcRequestBuilders.post("/lotteries")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(/* Convert lotteryRequest to JSON */))
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.ticket").exists());
-//
-//        // Verify that the method in lotteryService was called
-//        verify(lotteryService, times(1)).createNewLotteryByAdmin(any(LotteryRequest.class));
-//    }
 }
