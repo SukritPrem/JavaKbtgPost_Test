@@ -117,18 +117,4 @@ public class LotteryServiceTest {
 
 }
 
-//class lotteryNotCallSaveUserService extends LotteryService
-//{
-//    @Mock
-//    UserTicket userTicket;
-//
-//    public lotteryNotCallSaveUserService(LotteryRepository lotteryRepository, UserService userService, UserRepository userRepository) {
-//        super(lotteryRepository, userService, userRepository);
-//    }
-//
-//    @Override
-//    public UserTicket createNewLotteryByAdmin(LotteryRequest lotteryRequest){
-//        return new UserTicket("1234567890",
-//                "ADMIN","ADD","123456","234","123");
-//    }
-//}
+

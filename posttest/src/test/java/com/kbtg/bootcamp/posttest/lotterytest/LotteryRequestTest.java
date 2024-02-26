@@ -75,11 +75,11 @@ public class LotteryRequestTest {
     public void testInvalidLotteryRequestMinPrice() {
         // Create an invalid LotteryRequest with negative values
         LotteryRequest lotteryRequest = new LotteryRequest();
-        lotteryRequest.setTicket("123456"); // Not 6 characters long
-        lotteryRequest.setPrice(1);  // Negative price
-        lotteryRequest.setAmount(1); // Negative amount
+        lotteryRequest.setTicket("123456");
+        lotteryRequest.setPrice(1);
+        lotteryRequest.setAmount(1);
 
-        // Validate the LotteryRequest
+
         Set<ConstraintViolation<LotteryRequest>> violations = validator.validate(lotteryRequest);
 
         // Assert that there are violations
@@ -96,9 +96,9 @@ public class LotteryRequestTest {
     public void testInvalidLotteryRequestAllNumberisMaxInt() {
         // Create an invalid LotteryRequest with negative values
         LotteryRequest lotteryRequest = new LotteryRequest();
-        lotteryRequest.setTicket(""); // Not 6 characters long
-        lotteryRequest.setPrice(Integer.MAX_VALUE);  // Negative price
-        lotteryRequest.setAmount(Integer.MAX_VALUE); // Negative amount
+        lotteryRequest.setTicket("");
+        lotteryRequest.setPrice(Integer.MAX_VALUE);
+        lotteryRequest.setAmount(Integer.MAX_VALUE);
 
         // Validate the LotteryRequest
         Set<ConstraintViolation<LotteryRequest>> violations = validator.validate(lotteryRequest);
@@ -121,8 +121,8 @@ public class LotteryRequestTest {
         // Create an invalid LotteryRequest with negative values
         LotteryRequest lotteryRequest = new LotteryRequest();
         lotteryRequest.setTicket("123456");
-        lotteryRequest.setPrice(10);  // Negative price
-        lotteryRequest.setAmount(0); // Negative amount
+        lotteryRequest.setPrice(10);
+        lotteryRequest.setAmount(0);
 
         // Validate the LotteryRequest
         Set<ConstraintViolation<LotteryRequest>> violations = validator.validate(lotteryRequest);
@@ -142,9 +142,9 @@ public class LotteryRequestTest {
     public void testInvalidLotteryRequestAllnegative() {
         // Create an invalid LotteryRequest with negative values
         LotteryRequest lotteryRequest = new LotteryRequest();
-        lotteryRequest.setTicket("123456"); // Not 6 characters long
-        lotteryRequest.setPrice(-1);  // Negative price
-        lotteryRequest.setAmount(-1); // Negative amount
+        lotteryRequest.setTicket("123456");
+        lotteryRequest.setPrice(-1);
+        lotteryRequest.setAmount(-1);
 
         // Validate the LotteryRequest
         Set<ConstraintViolation<LotteryRequest>> violations = validator.validate(lotteryRequest);
@@ -165,9 +165,9 @@ public class LotteryRequestTest {
     public void testInvalidLotteryRequestAllZero() {
         // Create an invalid LotteryRequest with negative values
         LotteryRequest lotteryRequest = new LotteryRequest();
-        lotteryRequest.setTicket("123456"); // Not 6 characters long
-        lotteryRequest.setPrice(0);  // Negative price
-        lotteryRequest.setAmount(0); // Negative amount
+        lotteryRequest.setTicket("123456");
+        lotteryRequest.setPrice(0);
+        lotteryRequest.setAmount(0);
 
         // Validate the LotteryRequest
         Set<ConstraintViolation<LotteryRequest>> violations = validator.validate(lotteryRequest);
@@ -188,9 +188,9 @@ public class LotteryRequestTest {
     public void testInvalidLotteryRequestAllNull() {
         // Create an invalid LotteryRequest with negative values
         LotteryRequest lotteryRequest = new LotteryRequest();
-        lotteryRequest.setTicket(null); // Not 6 characters long
-        lotteryRequest.setPrice(null);  // Negative price
-        lotteryRequest.setAmount(null); // Negative amount
+        lotteryRequest.setTicket(null);
+        lotteryRequest.setPrice(null);
+        lotteryRequest.setAmount(null);
 
         // Validate the LotteryRequest
         Set<ConstraintViolation<LotteryRequest>> violations = validator.validate(lotteryRequest);

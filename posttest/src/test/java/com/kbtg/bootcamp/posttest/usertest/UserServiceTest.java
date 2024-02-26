@@ -207,34 +207,6 @@ public class UserServiceTest {
         verify(userTicketRepository, never()).save(any());
     }
 }
-//@Test
-//@DisplayName("POST /{userId}/lotteries/{ticketId} When User Buy Lottery")
-//void TestPostWhenUserBuyLottery() throws Exception {
-//
-//    doReturn(123).when(userService).userBuyTicket(anyString(),anyString());
-//
-//    mockMvc.perform(get("/users/{userId}/lotteries/{ticketId}"))
-//            .andExpect(jsonPath("$.id", is(123)))
-//            .andExpect(status().isOk());
-//}
-//public UserTicket deleteTicket(String userId,String ticket) throws NotFoundException {
-//
-//    Optional<User> user = userRepository.findByuserid(userId);
-//    if(user.isEmpty())
-//        throw new NotFoundException("Ticket not found or User not found");
-//    UserTicketStore userTicketStore = userTicketStoreService.deleteTicketInUserTicketStore(userId,ticket);
-//
-//    return  userTicketRepository.save(
-//            new UserTicket(
-//                    userTicketStore.getUserid(),
-//                    "USER",
-//                    "DELETE",
-//                    userTicketStore.getTicket(),
-//                    userTicketStore.getAmount(),
-//                    userTicketStore.getPrice()
-//            )
-//    );
-//}
 
 class SpyUserServiceTest extends UserService
 {
