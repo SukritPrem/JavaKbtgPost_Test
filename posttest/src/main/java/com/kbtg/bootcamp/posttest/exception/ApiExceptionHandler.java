@@ -1,14 +1,12 @@
 package com.kbtg.bootcamp.posttest.exception;
 
-import jakarta.servlet.ServletException;
+import jakarta.validation.ValidationException;
 import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.ZonedDateTime;
 
@@ -50,28 +48,21 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<Object> handleInvalidType(MethodArgumentTypeMismatchException e) {
-        String errorMessage = "Invalid parameter type: " + e.getName();
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<Object> handleValidate(ValidationException e) {
+        String errorMessage = e.getMessage().split(":")[1];
         ApiErrorResponse errorResponse = new ApiErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, ZonedDateTime.now());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException e) {
+    public ResponseEntity<Object> handleArgumentNotValid(MethodArgumentNotValidException e) {
         String errorMessage = e.getBindingResult().getFieldError().getDefaultMessage();
         ApiErrorResponse errorResponse = new ApiErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, ZonedDateTime.now());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({AuthenticationServiceException.class, ServletException.class})
-    public ResponseEntity<String> handleAuthenticationFailure(Exception e) {
-        if (e instanceof AuthenticationServiceException || e instanceof ServletException) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource not found");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error occurred");
-        }
-    }
+
+
     @ExceptionHandler(PSQLException.class)
     public ResponseEntity<Object> handleDuplicateKeyException(PSQLException ex) {
         // Check if the error message contains information about a duplicate key violation
