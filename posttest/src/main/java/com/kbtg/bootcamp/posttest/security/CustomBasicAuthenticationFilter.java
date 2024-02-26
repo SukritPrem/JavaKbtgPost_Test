@@ -1,5 +1,8 @@
 package com.kbtg.bootcamp.posttest.security;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kbtg.bootcamp.posttest.exception.AuthenticationExceptionCustom;
 import com.kbtg.bootcamp.posttest.security.JWT.JwtService;
 import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.UserRepository;
@@ -7,7 +10,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.AuthenticationServiceException;
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,25 +46,38 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-        if(isAuthenticated()) {
+//        System.out.print(request.getServletPath());
+        if(isAuthenticated() || request.getServletPath().startsWith("/users")
+                || request.getServletPath().startsWith("/lotteries")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        try {
+        try{
             authenticateUser(request, response,filterChain);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        }catch (AuthenticationExceptionCustom e)
+        {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            response.getWriter().write(e.getMessage());
+        }catch(BadRequestException e)
+        {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.getWriter().write(e.getMessage());
         }
+
+
+
+
     }
 
-    private void authenticateUser(HttpServletRequest request, HttpServletResponse response,FilterChain filterChain) throws IOException, InterruptedException, ServletException {
+    private void authenticateUser(HttpServletRequest request, HttpServletResponse response,FilterChain filterChain) throws  ServletException, IOException, AuthenticationExceptionCustom {
 
         String userid = getUsernameFromRequest(request);
         String password = getPasswordFromRequest(request);
         if (userid != null && password != null) {
             Optional<User> user = userRepository.findByuserid(userid);
-            try {
+
+//                System.out.print(userid);
 //                System.out.print("I'm here.\n");
                 if(user.isPresent()) {
 //                    System.out.print("I'm Present.\n");
@@ -70,18 +87,24 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
                     response.addHeader("Authorization", "Bearer " + createJwtToken(user.get()));
                     SecurityContextHolder.getContext().setAuthentication(authenticated);
                 }
+                else
+                    throw new AuthenticationExceptionCustom("User Not found");
 //                System.out.print("I'm going.\n");
-            }
-            catch (AuthenticationServiceException e)
-            {
-                handleAuthenticationFailure(request, response, e);
-            }
         }
+        else
+            throw new BadRequestException("User or Password is Null.");
 
         filterChain.doFilter(request, response);
 
     }
 
+    public String convertObjectToJson(Object object) throws JsonProcessingException {
+        if (object == null) {
+            return null;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(object);
+    }
     public String createJwtToken(User user){
         CustomUserDetail customUserDetail = new CustomUserDetail(user.getUserId(),user.getEncoderpassword());
         List<String> stringList = new ArrayList<>();
@@ -95,15 +118,6 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
         return authentication != null && authentication.isAuthenticated();
     }
 
-    private void handleAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, Exception e) throws IOException {
-        if (e instanceof AuthenticationServiceException || e instanceof ServletException) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().write("Resource not found");
-        } else {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("Internal server error occurred");
-        }
-    }
 
     private String getUsernameFromRequest(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");

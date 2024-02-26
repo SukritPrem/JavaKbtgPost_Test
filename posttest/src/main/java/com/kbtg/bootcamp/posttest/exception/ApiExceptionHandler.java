@@ -34,8 +34,17 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.OK);
     }
+//    AuthenticationException
+
+    @ExceptionHandler({ AuthenticationExceptionCustom.class})
+    public ResponseEntity<Object> handleAuthenticationException( AuthenticationExceptionCustom e) {
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                e.getMessage(), HttpStatus.NOT_FOUND, ZonedDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
     @ExceptionHandler({ServerInternalErrorException.class})
-    public ResponseEntity<Object> handleServerInternalErrorException(NotFoundException e) {
+    public ResponseEntity<Object> handleServerInternalErrorException(ServerInternalErrorException e) {
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, ZonedDateTime.now()
         );
