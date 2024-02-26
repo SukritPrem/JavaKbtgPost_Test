@@ -4,7 +4,7 @@ import com.kbtg.bootcamp.posttest.security.CustomAuthenticationManager;
 import com.kbtg.bootcamp.posttest.security.DomainExtractor;
 import com.kbtg.bootcamp.posttest.security.JWT.JwtAuthFilter;
 import com.kbtg.bootcamp.posttest.security.JWT.JwtService;
-import com.kbtg.bootcamp.posttest.user.ReturnResultAllToUser;
+import com.kbtg.bootcamp.posttest.user.UserResponse;
 import com.kbtg.bootcamp.posttest.user.UserController;
 import com.kbtg.bootcamp.posttest.user.UserRepository;
 import com.kbtg.bootcamp.posttest.user.UserService;
@@ -61,7 +61,7 @@ public class UserControllerTest {
         resultAllticket.add("000001");
         Integer price = 199;
         Integer amount = 1;
-        ReturnResultAllToUser result = new ReturnResultAllToUser(resultAllticket,price,amount);
+        UserResponse result = new UserResponse(resultAllticket,price,amount);
         when(userService.allTotalTicket(userId)).thenReturn(result);
         mockMvc.perform(get("/users/{userId}/lotteries", userId))
                 .andExpect(jsonPath("$.tickets", hasSize(1)))
@@ -125,7 +125,7 @@ public class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Test number character == 12345678.9 GET: /users/{userId}/lotteries")
+    @DisplayName("Test user id number character == 12345678.9 GET: /users/{userId}/lotteries")
     void TestUserInvalidPathNumberCaseThree() throws Exception {
 
         mockMvc.perform(get("/users/{userId}/lotteries", "12345678.9"))
@@ -134,20 +134,20 @@ public class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Test number character < 10 POST /users/{userId}/lotteries/{ticketId}")
+    @DisplayName("Test user id number character < 10 POST /users/{userId}/lotteries/{ticketId}")
     void TestPostUserInvalidPathNumberCaseThree() throws Exception {
 
-        mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567","จจจจจจ"))
+        mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567","123456"))
                 .andExpect(jsonPath("$.message",is("Input need Numeric 10 character")))
                 .andExpect(status().isBadRequest());
     }
 
 
     @Test
-    @DisplayName("Test number character < 10 POST /users/{userId}/lotteries/{ticketId}")
+    @DisplayName("Test ticket id number character < 6 POST /users/{userId}/lotteries/{ticketId}")
     void TestPostTicketIdInvalid() throws Exception {
 
-        mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567890","จจจจจจ"))
+        mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567890","12345"))
                 .andExpect(jsonPath("$.message",is("Input need Numeric 6 character")))
                 .andExpect(status().isBadRequest());
     }
@@ -156,7 +156,7 @@ public class UserControllerTest {
     void TestPostUserSuccess() throws Exception {
 
         mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567890","123456"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -167,7 +167,7 @@ public class UserControllerTest {
 
         mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567890","123456"))
                 .andExpect(jsonPath("$.id", is("1")))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test

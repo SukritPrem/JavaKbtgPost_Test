@@ -50,7 +50,7 @@ public class adminControllerTest {
         mockMvc.perform(post("/admin/lotteries")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(lotteryRequest)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.ticket", is(lotteryRequest.getTicket())));// Ensure the "ticket" list contains 3 elements
     }
 

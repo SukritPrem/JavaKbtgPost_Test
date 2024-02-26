@@ -87,7 +87,7 @@ public class UserService {
                 throw new ServerInternalErrorException("Error User Buy Ticket");
     }
 
-    public  ReturnResultAllToUser  allTotalTicket(String userId) throws NotFoundException {
+    public UserResponse allTotalTicket(String userId) throws NotFoundException {
         return userTicketStoreService.sumTicketAndCostAndAmount(userId);
     }
 

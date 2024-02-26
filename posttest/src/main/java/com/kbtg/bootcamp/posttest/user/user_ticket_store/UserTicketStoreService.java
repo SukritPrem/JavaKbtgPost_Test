@@ -3,7 +3,7 @@ package com.kbtg.bootcamp.posttest.user.user_ticket_store;
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.exception.ServerInternalErrorException;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
-import com.kbtg.bootcamp.posttest.user.ReturnResultAllToUser;
+import com.kbtg.bootcamp.posttest.user.UserResponse;
 import com.kbtg.bootcamp.posttest.user.userOperation.UserOperation;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -59,16 +59,16 @@ public class UserTicketStoreService {
         }
     }
 
-    public ReturnResultAllToUser sumTicketAndCostAndAmount(String userid) throws NotFoundException {
+    public UserResponse sumTicketAndCostAndAmount(String userid) throws NotFoundException {
         List<UserTicketStore> user = userTicketStoreRepository.findByuserid(userid);
         if (!user.isEmpty()) {
-            return new ReturnResultAllToUser(
+            return new UserResponse(
                     listAllStringTicket(userid),
                     sumAllCost(userid),
                     sumAllAmount(userid)
             );
         } else
-            throw new NotFoundException("UserTicketStore Not Found " + userid);
+            throw new NotFoundException("UserTicketStore Not Found userid");
     }
 
 
@@ -78,7 +78,7 @@ public class UserTicketStoreService {
             userTicketStoreRepository.deleteTicketByuserId(ticket, userId);
             return userTicketStoreOptional.get();
         }
-        throw new NotFoundException("UserTicketStore Not Found Lottery :" + ticket);
+        throw new NotFoundException("UserTicketStore Not Found Lottery");
     }
 
     public void checkIfPriceLotteryChangeUpdate(String ticket, String price) {

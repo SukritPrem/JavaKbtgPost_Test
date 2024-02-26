@@ -112,7 +112,7 @@ public class UserServiceTest {
             userService.userBuyTicket("user_id", "ticket_id");
         });
 
-        assertEquals("Error user id or lottery not found", exception.getMessage());
+        assertEquals("Error user id not found", exception.getMessage());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class UserServiceTest {
             userService.userBuyTicket("user_id", "ticket_id");
         });
 
-        assertEquals("Error user id or lottery not found", exception.getMessage());
+        assertEquals("Error lottery not found", exception.getMessage());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class UserServiceTest {
             userService.userBuyTicket("user_id", "ticket_id");
         });
 
-        assertEquals("Error user id or lottery not found", exception.getMessage());
+        assertEquals("Error user id not found", exception.getMessage());
     }
 
     @Test

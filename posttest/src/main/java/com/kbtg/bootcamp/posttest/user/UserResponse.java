@@ -3,7 +3,7 @@ package com.kbtg.bootcamp.posttest.user;
 
 import java.util.List;
 
-public class ReturnResultAllToUser {
+public class UserResponse {
 
     private List<String> tickets;
 
@@ -11,11 +11,11 @@ public class ReturnResultAllToUser {
 
     private Integer count;
 
-    ReturnResultAllToUser()
+    UserResponse()
     {
 
     }
-    public ReturnResultAllToUser(List<String> tickets, Integer cost, Integer count)
+    public UserResponse(List<String> tickets, Integer cost, Integer count)
     {
         this.tickets = tickets;
         this.cost =cost;

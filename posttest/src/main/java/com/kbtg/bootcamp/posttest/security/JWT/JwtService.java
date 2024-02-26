@@ -33,7 +33,6 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
     public Claims extractAllClaims(String token) {
-//        return (Claims) Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes()).build().parse(token).getBody();
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 

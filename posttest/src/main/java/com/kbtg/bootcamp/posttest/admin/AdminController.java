@@ -5,10 +5,8 @@ import com.kbtg.bootcamp.posttest.lottery.LotteryService;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -25,6 +23,7 @@ public class AdminController {
 
     @Transactional
     @PostMapping("/lotteries")
+    @ResponseStatus(HttpStatus.CREATED)
     public Map<String, String> createLottery(@Valid @RequestBody LotteryRequest lotteryRequest){
         UserTicket userTicket = lotteryService.createNewLotteryByAdmin(lotteryRequest);
         return Map.of("ticket",  userTicket.getTicket());

@@ -5,6 +5,7 @@ import com.kbtg.bootcamp.posttest.exception.Status200Exception;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,7 @@ public class UserController {
     @Transactional
     @ResponseBody
     @PostMapping("/{userId}/lotteries/{ticketId}")
+    @ResponseStatus(HttpStatus.CREATED)
     public  Map<String, String>  UserBuyTicket(@PathVariable @Pattern(regexp = "\\d{10}", message = "Input need Numeric 10 character") String userId,
                                             @PathVariable @Pattern(regexp = "\\d{6}", message = "Input need Numeric 6 character") String ticketId) throws NotFoundException, Status200Exception {
             return Map.of(
@@ -35,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/lotteries")
-    public ReturnResultAllToUser UserGetAllTicket(@PathVariable  @Pattern(regexp = "\\d{10}",  message = "Input need Numeric 10 character") String userId) throws NotFoundException {
+    public UserResponse UserGetAllTicket(@PathVariable  @Pattern(regexp = "\\d{10}",  message = "Input need Numeric 10 character") String userId) throws NotFoundException {
         return userService.allTotalTicket(userId);
     }
 

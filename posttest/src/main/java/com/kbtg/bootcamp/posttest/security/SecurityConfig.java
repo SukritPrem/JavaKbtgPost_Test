@@ -27,9 +27,7 @@ public class SecurityConfig{
 
     private final DomainExtractor domainExtractor;
     private final AuthenticationManager authenticationManager;
-//    private final ApplicationConfig applicationConfig;
-//    private final CustomBasicAuthenticationFilter customBasicAuthenticationFilter;
-//private final CustomAuthenticationProvider customAuthenticationProvider;
+
     @Autowired
     public SecurityConfig(JwtAuthFilter jwtAuthFilter,
                           DomainExtractor domainExtractor,

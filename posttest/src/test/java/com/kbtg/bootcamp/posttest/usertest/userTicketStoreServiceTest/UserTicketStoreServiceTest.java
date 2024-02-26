@@ -4,7 +4,7 @@ import com.kbtg.bootcamp.posttest.exception.NotFoundException;
 import com.kbtg.bootcamp.posttest.exception.ServerInternalErrorException;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
-import com.kbtg.bootcamp.posttest.user.ReturnResultAllToUser;
+import com.kbtg.bootcamp.posttest.user.UserResponse;
 import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.userOperation.UserOperation;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
@@ -176,7 +176,7 @@ public class UserTicketStoreServiceTest {
 
         List<String> tickets = listUser.stream().map(user -> user.getTicket()).collect(Collectors.toList());
 
-        ReturnResultAllToUser expect = new ReturnResultAllToUser(tickets,cost,amountInt);
+        UserResponse expect = new UserResponse(tickets,cost,amountInt);
 
 
         when(userTicketStoreRepository.findByuserid(anyString())).thenReturn(listUser);
@@ -187,7 +187,7 @@ public class UserTicketStoreServiceTest {
 
 
         // Call the method under test
-        ReturnResultAllToUser result = userTicketStoreService.sumTicketAndCostAndAmount("123456");
+        UserResponse result = userTicketStoreService.sumTicketAndCostAndAmount("123456");
 
         assertEquals(expect.getTickets(),result.getTickets());
         assertEquals(expect.getCost(),result.getCost());
@@ -206,7 +206,7 @@ public class UserTicketStoreServiceTest {
         try {
             userTicketStoreService.deleteTicketInUserTicketStore("", "");
         } catch (Exception e) {
-            assertEquals("UserTicketStore Not Found", e.getMessage());
+            assertEquals("UserTicketStore Not Found Lottery", e.getMessage());
         }
 
     }
