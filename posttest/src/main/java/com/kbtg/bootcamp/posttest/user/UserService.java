@@ -60,7 +60,7 @@ public class UserService {
     public Integer userBuyTicket(String userId, String ticketId) throws NotFoundException, Status200Exception {
 
             UserOperation userOperation = checkUserAndLottery(userId, ticketId);
-            userOperation = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperation);
+            userOperation = userTicketStoreService.updateUserTicketStoreAndLottery(userOperation);
             if (userOperation.getAction().equals("BUY")) {
                 return saveUserActionReturnUserTicket(
                         userOperation.getAction(),
@@ -96,7 +96,7 @@ public class UserService {
 
         Optional<User> user = userRepository.findByuserid(userId);
         if(user.isEmpty())
-            throw new NotFoundException("Ticket not found or User not found");
+            throw new NotFoundException("User not found");
         UserTicketStore userTicketStore = userTicketStoreService.deleteTicketInUserTicketStore(userId,ticket);
         return  userTicketRepository.save(
                 new UserTicket(

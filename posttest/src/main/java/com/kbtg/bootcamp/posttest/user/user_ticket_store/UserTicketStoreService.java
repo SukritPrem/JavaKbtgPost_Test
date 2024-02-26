@@ -26,7 +26,7 @@ public class UserTicketStoreService {
     }
 
     @Transactional
-    public UserOperation updateUserTicketAndLotteryAndReturnUserId(UserOperation userOperation) throws ServerInternalErrorException {
+    public UserOperation updateUserTicketStoreAndLottery(UserOperation userOperation) throws ServerInternalErrorException {
         try {
                 Optional<UserTicketStore> userTicketStoreOptional = userTicketStoreRepository.findByUseridAndTicket(
                     userOperation.getUser().getUserId(),
@@ -68,7 +68,7 @@ public class UserTicketStoreService {
                     sumAllAmount(userid)
             );
         } else
-            throw new NotFoundException("Lottery user not found in UserTicketStore.");
+            throw new NotFoundException("UserTicketStore Not Found " + userid);
     }
 
 
@@ -78,7 +78,7 @@ public class UserTicketStoreService {
             userTicketStoreRepository.deleteTicketByuserId(ticket, userId);
             return userTicketStoreOptional.get();
         }
-        throw new NotFoundException("UserTicketStore Not Found");
+        throw new NotFoundException("UserTicketStore Not Found Lottery :" + ticket);
     }
 
     public void checkIfPriceLotteryChangeUpdate(String ticket, String price) {

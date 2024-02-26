@@ -85,7 +85,7 @@ public class UserServiceTest {
                 userOperation.getLottery().getPrice());
         userTicket.setId(1);
 
-        doReturn(userOperation).when(userTicketStoreService).updateUserTicketAndLotteryAndReturnUserId(any());
+        doReturn(userOperation).when(userTicketStoreService).updateUserTicketStoreAndLottery(any());
         doReturn(userTicket).when(userTicketRepository).save(any());
 
         Integer result = spyUserServiceTest.userBuyTicket(
@@ -95,7 +95,7 @@ public class UserServiceTest {
 
         assertEquals(userTicket.getId(), result);
 
-        verify(userTicketStoreService).updateUserTicketAndLotteryAndReturnUserId(any());
+        verify(userTicketStoreService).updateUserTicketStoreAndLottery(any());
         verify(userTicketRepository).save(any());
     }
 

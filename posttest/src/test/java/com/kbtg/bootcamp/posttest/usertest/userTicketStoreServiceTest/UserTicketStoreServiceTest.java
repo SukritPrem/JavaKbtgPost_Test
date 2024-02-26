@@ -59,7 +59,7 @@ public class UserTicketStoreServiceTest {
         when(userTicketStoreRepository.findByUseridAndTicket(any(), any())).thenReturn(Optional.empty());
 
         // Call the method under test
-        UserOperation result = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperation);
+        UserOperation result = userTicketStoreService.updateUserTicketStoreAndLottery(userOperation);
 
         assertEquals(userOperation, result);
         assertEquals("BUY", result.getAction());
@@ -89,7 +89,7 @@ public class UserTicketStoreServiceTest {
         when(userTicketStoreRepository.findByUseridAndTicket(any(), any())).thenReturn(Optional.of(userTicketStore));
 
         // Call the method under test
-        UserOperation result = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperation);
+        UserOperation result = userTicketStoreService.updateUserTicketStoreAndLottery(userOperation);
 
         assertEquals(userOperation, result);
         assertEquals("BUY AND UPDATE", result.getAction());
@@ -118,7 +118,7 @@ public class UserTicketStoreServiceTest {
 
         // Call the method under test
         Integer expect = Integer.parseInt(lottery.getAmount()) + Integer.parseInt(userTicketStore.getAmount());
-        UserOperation result = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperation);
+        UserOperation result = userTicketStoreService.updateUserTicketStoreAndLottery(userOperation);
 
         assertEquals(Integer.toString(expect), result.getUserTicketStore().getAmount());
         assertEquals("BUY AND UPDATE", result.getAction());
@@ -143,7 +143,7 @@ public class UserTicketStoreServiceTest {
 
         // Assertions
         assertThrows(ServerInternalErrorException.class, () -> {
-            userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userOperation);
+            userTicketStoreService.updateUserTicketStoreAndLottery(userOperation);
         });
     }
 

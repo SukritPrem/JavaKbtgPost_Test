@@ -48,7 +48,7 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-//        System.out.print(request.getServletPath());
+
         if(isAuthenticated() || request.getServletPath().startsWith("/users")
                 || request.getServletPath().startsWith("/lotteries")) {
             filterChain.doFilter(request, response);
@@ -71,7 +71,6 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
 
 
 
-
     }
 
     private void authenticateUser(HttpServletRequest request, HttpServletResponse response,FilterChain filterChain) throws  ServletException, IOException, NotFoundException {
@@ -87,14 +86,13 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
                     Authentication authenticated = customAuthenticationManager.authenticate(authentication);
                     response.addHeader("Authorization", "Bearer " + createJwtToken(user.get()));
                     SecurityContextHolder.getContext().setAuthentication(authenticated);
+                    filterChain.doFilter(request, response);
                 }
                 else
                     throw new NotFoundException("User Not found");
         }
         else
             throw new BadRequestException("User or Password is Null.");
-
-        filterChain.doFilter(request, response);
 
     }
 
