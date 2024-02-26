@@ -104,20 +104,5 @@ public class LotteryService {
                 .map(Lottery::getTicket)
                 .collect(Collectors.toList());
     }
-//    public UserTicket CreateNewLotteryAndReturnUserticket(LotteryRepository lotteryRepository,
-//                                                          UserService userService,
-//                                                          Lottery newLottery,
-//                                                          User user)
-//    {
-//        lotteryRepository.save(newLottery);
-//        //save user_action
-//        return userService.saveUserActionReturnUserTicket(
-//                "ADD",
-//                Integer.parseInt(newLottery.getAmount()),
-//                user,
-//                newLottery
-//        );
-//    }
-
 
 }

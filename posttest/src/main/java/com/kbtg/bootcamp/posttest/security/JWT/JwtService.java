@@ -49,10 +49,7 @@ public class JwtService {
     }
 
     public List<GrantedAuthority> getAuthorities(String token) {
-//        System.out.print(token + "\n");
         List<String> authorities = extractClaim(token, claims -> claims.get("authorities", List.class));
-        System.out.print("Hello\n");
-        System.out.print(authorities);
         return authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 

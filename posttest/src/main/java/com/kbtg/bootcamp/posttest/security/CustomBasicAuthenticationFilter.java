@@ -77,10 +77,7 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
         if (userid != null && password != null) {
             Optional<User> user = userRepository.findByuserid(userid);
 
-//                System.out.print(userid);
-//                System.out.print("I'm here.\n");
                 if(user.isPresent()) {
-//                    System.out.print("I'm Present.\n");
                     Authentication authentication = new UsernamePasswordAuthenticationToken(userid, password);
 
                     Authentication authenticated = customAuthenticationManager.authenticate(authentication);
@@ -89,7 +86,6 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
                 }
                 else
                     throw new AuthenticationExceptionCustom("User Not found");
-//                System.out.print("I'm going.\n");
         }
         else
             throw new BadRequestException("User or Password is Null.");

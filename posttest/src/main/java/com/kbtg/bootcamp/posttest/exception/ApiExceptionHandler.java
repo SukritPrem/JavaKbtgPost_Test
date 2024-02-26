@@ -34,7 +34,6 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.OK);
     }
-//    AuthenticationException
 
     @ExceptionHandler({ AuthenticationExceptionCustom.class})
     public ResponseEntity<Object> handleAuthenticationException( AuthenticationExceptionCustom e) {

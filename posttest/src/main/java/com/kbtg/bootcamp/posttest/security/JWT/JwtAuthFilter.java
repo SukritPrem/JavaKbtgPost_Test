@@ -1,9 +1,6 @@
 package com.kbtg.bootcamp.posttest.security.JWT;
 
 import com.kbtg.bootcamp.posttest.security.DomainExtractor;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -38,21 +35,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String username;
         final String jwtToken;
 
-//        System.out.print("Hey Man Verifiy before get in!!!\n");
         if (authHeader == null || !authHeader.startsWith("Bearer")) {
-//            System.out.print("Hey Man you already Pass\n");
             filterChain.doFilter(request,response);
             return;
         }
-//        System.out.print("Come on Come on \n");
         jwtToken = authHeader.substring(7);
         username = jwtService.extractUsername(jwtToken);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             List<GrantedAuthority> authorities = jwtService.getAuthorities(jwtToken);
-            Jws<Claims> claims = Jwts.parser().setSigningKey(jwtService.SECRET_KEY).parseClaimsJws(jwtToken);
 
             if (!jwtService.isTokenExpired(jwtToken)) {
-//                System.out.print("Hello jwtservice is Expired?\n");
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }

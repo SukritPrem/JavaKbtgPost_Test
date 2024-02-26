@@ -67,22 +67,4 @@ public class UserOperation {
     }
 
 
-//    private UserService userService;
-//    private UserTicketStoreService userTicketStoreService;
-
-//    public UserOperationsService(UserService userService,
-//                                 UserTicketStoreService userTicketStoreService)
-//    {
-//        this.userService =userService;
-//        this.userTicketStoreService = userTicketStoreService;
-//    }
-//
-//    public Integer UserBuyTicket(String userId,String ticketId) throws NotFoundException{
-//        if(userService.CheckUserAndLottery(userId,ticketId)) {
-//            Map<String, Object> twoclass = userTicketStoreService.updateUserTicketAndLotteryAndReturnUserId(userId, ticketId);
-//            userService.
-//        }
-//        else
-//            throw new NotFoundException("Error user id or lottery not found");
-//    }
 }
