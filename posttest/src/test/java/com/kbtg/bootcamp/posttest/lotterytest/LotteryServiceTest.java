@@ -1,7 +1,6 @@
 package com.kbtg.bootcamp.posttest.lotterytest;
 
 import com.kbtg.bootcamp.posttest.exception.NotFoundException;
-import com.kbtg.bootcamp.posttest.exception.ServerInternalErrorException;
 import com.kbtg.bootcamp.posttest.lottery.Lottery;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRepository;
 import com.kbtg.bootcamp.posttest.lottery.LotteryRequest;
@@ -76,7 +75,7 @@ public class LotteryServiceTest {
     public void GetAllLotteryNotFound()
     {
         // Call the method under test
-        Exception exception = assertThrows(ServerInternalErrorException.class, () -> {
+        Exception exception = assertThrows(NotFoundException.class, () -> {
             lotteryService.getAll_lottery();
         });
 
