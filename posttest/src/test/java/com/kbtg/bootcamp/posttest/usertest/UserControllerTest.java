@@ -76,7 +76,7 @@ public class UserControllerTest {
     void TestUserInvalidPathNumberCaseOne() throws Exception {
 
         mockMvc.perform(get("/users/{userId}/lotteries", "12345678"))
-                .andExpect(jsonPath("$.message", is("Input need Numeric 10 character")))
+                .andExpect(jsonPath("$.message", is("Input userid Numeric 10 character")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -85,7 +85,7 @@ public class UserControllerTest {
     void TestUserInvalidPathNumberCaseTwo() throws Exception {
 
         mockMvc.perform(get("/users/{userId}/lotteries", "12345678901"))
-                .andExpect(jsonPath("$.message", is("Input need Numeric 10 character")))
+                .andExpect(jsonPath("$.message", is("Input userid Numeric 10 character")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -94,7 +94,7 @@ public class UserControllerTest {
     void TestUserInvalidPathStringCaseOne() throws Exception {
 
         mockMvc.perform(get("/users/{userId}/lotteries", "abcdefghij"))
-                .andExpect(jsonPath("$.message", is("Input need Numeric 10 character")))
+                .andExpect(jsonPath("$.message", is("Input userid Numeric 10 character")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -103,7 +103,7 @@ public class UserControllerTest {
     void TestUseInvalidPathStringCombineNumber() throws Exception {
 
         mockMvc.perform(get("/users/{userId}/lotteries", "abcdefg123"))
-                .andExpect(jsonPath("$.message", is("Input need Numeric 10 character")))
+                .andExpect(jsonPath("$.message", is("Input userid Numeric 10 character")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -112,7 +112,7 @@ public class UserControllerTest {
     void TestUserInvalidPathStringSpecialCase() throws Exception {
 
         mockMvc.perform(get("/users/{userId}/lotteries", "$+-*!@$$$*"))
-                .andExpect(jsonPath("$.message", is("Input need Numeric 10 character")))
+                .andExpect(jsonPath("$.message", is("Input userid Numeric 10 character")))
                 .andExpect(status().isBadRequest());
     }
     @Test
@@ -120,7 +120,7 @@ public class UserControllerTest {
     void TestUserInvalidPathStringSpecialCaseTwo() throws Exception {
 
         mockMvc.perform(get("/users/{userId}/lotteries", "จจจจจจจจจจ"))
-                .andExpect(jsonPath("$.message", is("Input need Numeric 10 character")))
+                .andExpect(jsonPath("$.message", is("Input userid Numeric 10 character")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -129,7 +129,7 @@ public class UserControllerTest {
     void TestUserInvalidPathNumberCaseThree() throws Exception {
 
         mockMvc.perform(get("/users/{userId}/lotteries", "12345678.9"))
-                .andExpect(jsonPath("$.message",is("Input need Numeric 10 character")))
+                .andExpect(jsonPath("$.message",is("Input userid Numeric 10 character")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -138,7 +138,7 @@ public class UserControllerTest {
     void TestPostUserInvalidPathNumberCaseThree() throws Exception {
 
         mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567","123456"))
-                .andExpect(jsonPath("$.message",is("Input need Numeric 10 character")))
+                .andExpect(jsonPath("$.message",is("Input userid Numeric 10 character")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -148,7 +148,7 @@ public class UserControllerTest {
     void TestPostTicketIdInvalid() throws Exception {
 
         mockMvc.perform(post("/users/{userId}/lotteries/{ticketId}", "1234567890","12345"))
-                .andExpect(jsonPath("$.message",is("Input need Numeric 6 character")))
+                .andExpect(jsonPath("$.message",is("Input ticket id Numeric 6 character")))
                 .andExpect(status().isBadRequest());
     }
     @Test

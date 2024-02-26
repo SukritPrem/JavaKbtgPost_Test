@@ -29,23 +29,23 @@ public class UserController {
     @ResponseBody
     @PostMapping("/{userId}/lotteries/{ticketId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public  Map<String, String>  UserBuyTicket(@PathVariable @Pattern(regexp = "\\d{10}", message = "Input need Numeric 10 character") String userId,
-                                            @PathVariable @Pattern(regexp = "\\d{6}", message = "Input need Numeric 6 character") String ticketId) throws NotFoundException, Status200Exception {
+    public  Map<String, String>  UserBuyTicket(@PathVariable @Pattern(regexp = "\\d{10}", message = "Input userid Numeric 10 character") String userId,
+                                            @PathVariable @Pattern(regexp = "\\d{6}", message = "Input ticket id Numeric 6 character") String ticketId) throws NotFoundException, Status200Exception {
             return Map.of(
                     "id", Integer.toString(userService.userBuyTicket(userId, ticketId))
             );
     }
 
     @GetMapping("/{userId}/lotteries")
-    public UserResponse UserGetAllTicket(@PathVariable  @Pattern(regexp = "\\d{10}",  message = "Input need Numeric 10 character") String userId) throws NotFoundException {
+    public UserResponse UserGetAllTicket(@PathVariable  @Pattern(regexp = "\\d{10}",  message = "Input userid Numeric 10 character") String userId) throws NotFoundException {
         return userService.allTotalTicket(userId);
     }
 
     @Transactional
     @ResponseBody
     @DeleteMapping("/{userId}/lotteries/{ticketId}")
-    public Map<String, String> UserDeleteTicket(@PathVariable  @Pattern(regexp = "\\d{10}",message = "Input need Numeric 10 character") String userId,
-                                              @PathVariable  @Pattern(regexp = "\\d{6}", message = "Input need Numeric 6 character") String ticketId) throws NotFoundException {
+    public Map<String, String> UserDeleteTicket(@PathVariable  @Pattern(regexp = "\\d{10}",message = "Input userid Numeric 10 character") String userId,
+                                              @PathVariable  @Pattern(regexp = "\\d{6}", message = "Input ticket id Numeric 6 character") String ticketId) throws NotFoundException {
         return Map.of(
                 "ticket", userService.deleteTicket(userId, ticketId)
         );
