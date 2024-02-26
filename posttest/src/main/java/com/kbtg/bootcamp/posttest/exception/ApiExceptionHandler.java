@@ -36,10 +36,19 @@ public class ApiExceptionHandler {
     @ExceptionHandler({ AuthenticationExceptionCustom.class})
     public ResponseEntity<Object> handleAuthenticationException( AuthenticationExceptionCustom e) {
         ApiErrorResponse errorResponse = new ApiErrorResponse(
-                e.getMessage(), HttpStatus.NOT_FOUND, ZonedDateTime.now()
+                e.getMessage(), HttpStatus.BAD_REQUEST, ZonedDateTime.now()
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({SetterMessageAndStatusCodeException.class})
+    public ResponseEntity<Object> SetterMessageAndStatusCodeException(SetterMessageAndStatusCodeException e) {
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                e.getMessage(), e.getStatus(), ZonedDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, e.getStatus());
+    }
+
     @ExceptionHandler({ServerInternalErrorException.class})
     public ResponseEntity<Object> handleServerInternalErrorException(ServerInternalErrorException e) {
         ApiErrorResponse errorResponse = new ApiErrorResponse(
@@ -50,10 +59,13 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<Object> handleValidate(ValidationException e) {
-        String errorMessage = e.getMessage().split(":")[1];
+        String errorMessage = e.getMessage().split(": ")[1];
+        if(errorMessage.contains(", "))
+            errorMessage = errorMessage.split(", ")[0];
         ApiErrorResponse errorResponse = new ApiErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, ZonedDateTime.now());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleArgumentNotValid(MethodArgumentNotValidException e) {
         String errorMessage = e.getBindingResult().getFieldError().getDefaultMessage();

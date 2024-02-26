@@ -10,7 +10,6 @@ import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicket;
 import com.kbtg.bootcamp.posttest.user.user_ticket.UserTicketRepository;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStore;
 import com.kbtg.bootcamp.posttest.user.user_ticket_store.UserTicketStoreService;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -38,13 +37,18 @@ public class UserService {
     public UserOperation checkUserAndLottery(String userId, String ticketId) throws NotFoundException, Status200Exception {
         Optional<User> user = userRepository.findByuserid(userId);
         Optional<Lottery> lotteryOptional = lotteryRepository.findByTicket(ticketId);
-        if(user.isEmpty() || lotteryOptional.isEmpty())
-            throw new NotFoundException("Error user id or lottery not found");
+
+        if(user.isEmpty())
+            throw new NotFoundException("Error user id not found");
+        if(lotteryOptional.isEmpty())
+            throw new NotFoundException("Error lottery not found");
 
         Lottery lottery = lotteryOptional.get();
+
         if(lottery.checkAmounteqaulZero()) {
             throw new Status200Exception("Sorry Lottery Sold out.");
         }
+
         UserOperation userOperation = new UserOperation();
         userOperation.setLottery(lottery);
         userOperation.setUser(user.get());
@@ -52,7 +56,7 @@ public class UserService {
     }
 
 
-    @Transactional
+
     public Integer userBuyTicket(String userId, String ticketId) throws NotFoundException, Status200Exception {
 
             UserOperation userOperation = checkUserAndLottery(userId, ticketId);
@@ -87,7 +91,7 @@ public class UserService {
         return userTicketStoreService.sumTicketAndCostAndAmount(userId);
     }
 
-    @Transactional
+
     public String deleteTicket(String userId,String ticket) throws NotFoundException {
 
         Optional<User> user = userRepository.findByuserid(userId);

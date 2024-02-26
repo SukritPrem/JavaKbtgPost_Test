@@ -68,7 +68,7 @@ public class UserTicketStoreService {
                     sumAllAmount(userid)
             );
         } else
-            throw new NotFoundException("Not found User in UserTicketStoreService Layer");
+            throw new NotFoundException("Lottery user not found in UserTicketStore.");
     }
 
 

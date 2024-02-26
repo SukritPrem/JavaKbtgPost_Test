@@ -2,7 +2,8 @@ package com.kbtg.bootcamp.posttest.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kbtg.bootcamp.posttest.exception.AuthenticationExceptionCustom;
+import com.kbtg.bootcamp.posttest.exception.NotFoundException;
+import com.kbtg.bootcamp.posttest.exception.SetterMessageAndStatusCodeException;
 import com.kbtg.bootcamp.posttest.security.JWT.JwtService;
 import com.kbtg.bootcamp.posttest.user.User;
 import com.kbtg.bootcamp.posttest.user.UserRepository;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
@@ -55,13 +57,15 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
 
         try{
             authenticateUser(request, response,filterChain);
-        }catch (AuthenticationExceptionCustom e)
-        {
-            response.setStatus(HttpStatus.NOT_FOUND.value());
-            response.getWriter().write(e.getMessage());
-        }catch(BadRequestException e)
+        }
+        catch(BadRequestException | NotFoundException e)
         {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.getWriter().write(e.getMessage());
+        }
+        catch (SetterMessageAndStatusCodeException e)
+        {
+            response.setStatus(e.getStatus().value());
             response.getWriter().write(e.getMessage());
         }
 
@@ -70,7 +74,7 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
 
     }
 
-    private void authenticateUser(HttpServletRequest request, HttpServletResponse response,FilterChain filterChain) throws  ServletException, IOException, AuthenticationExceptionCustom {
+    private void authenticateUser(HttpServletRequest request, HttpServletResponse response,FilterChain filterChain) throws  ServletException, IOException, NotFoundException {
 
         String userid = getUsernameFromRequest(request);
         String password = getPasswordFromRequest(request);
@@ -85,7 +89,7 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticated);
                 }
                 else
-                    throw new AuthenticationExceptionCustom("User Not found");
+                    throw new NotFoundException("User Not found");
         }
         else
             throw new BadRequestException("User or Password is Null.");
